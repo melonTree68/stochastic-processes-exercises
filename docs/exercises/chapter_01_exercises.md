@@ -41,7 +41,7 @@
     $$
     \Pr\left(X \ge \frac{6\log n}{\log\log n}\right) \le \frac{1}{n}.
     $$
-    请利用这一尾部概率结论，以及 $0\le X\le n$，证明
+    请利用这一尾部概率结论，以及 $0\le X\le n$ 的事实，证明
     $$
     \mathbb{E}[X] = O\left(\frac{\log n}{\log\log n}\right).
     $$
@@ -77,7 +77,7 @@
 
 ### 多数人的智慧 (Wisdom of the Majority)
 === "中文"
-    假设你有一个预测股市涨跌的算法。该算法每次独立预测时，都以 $\tfrac34$ 的概率给出正确建议。为提升准确率，你决定让该算法独立运行 $N$ 次，并采用多数表决（majority vote）。
+    假设你有一个预测股市涨跌的算法。该算法每次独立预测时，都以 $\tfrac34$ 的概率给出正确建议。为提升准确率，你决定让该算法独立运行 $N$ 次，并采用多数表决（majority vote）的方式得出最终的投资决策。
     
     请证明：对任意给定的允许出错概率上限 $\delta\in(0,1)$，只要
     $$
@@ -98,9 +98,9 @@
 
 ### 高斯分布的集中性 (Concentration of Gaussian Distribution)
 === "中文"
-    设 $X\sim\mathcal{N}(0,1)$ 为标准高斯随机变量。
+    设 $X\sim\mathcal{N}(0,1)$ 为标准高斯随机变量。我们来探究其尾部概率的精确上下界。
     
-    1. 请证明：对任意 $x>0$，有
+    1. 请证明，对任意 $x>0$，有如下积分不等式成立：
     	$$
     	\left(x^{-1}-x^{-3}\right)e^{-x^2/2}
     	\le \int_x^{+\infty} e^{-y^2/2}\,\mathrm{d}y
@@ -156,7 +156,7 @@
 
 ### 次高斯分布初探 (Introduction to Sub-Gaussian Distributions)
 === "中文"
-    如果均值为 $0$ 的随机变量 $X$ 满足：对任意 $\lambda\in\mathbb{R}$，
+    如果一个均值为 $0$ 的随机变量 $X$，其矩生成函数满足，对任意 $\lambda\in\mathbb{R}$，
     $$
     \mathbb{E}\big[e^{\lambda X}\big]\le \exp\left(\frac{\lambda^2\sigma^2}{2}\right),
     $$
@@ -166,8 +166,8 @@
     	$$
     	\Pr(X\ge t)\le \exp\left(-\frac{t^2}{2\sigma^2}\right).
     	$$
-    2. （可加性）若 $X_1,X_2$ 相互独立、均值为 $0$，参数分别为 $\sigma_1^2,\sigma_2^2$，证明 $X_1+X_2$ 也是次高斯，且参数为 $\sigma_1^2+\sigma_2^2$。
-    3. （有界变量即次高斯）结合霍夫丁引理，说明若 $\mathbb{E}[X]=0$ 且 $X\in[a,b]$，那么 $X$ 是参数
+    2. （可加性）请证明，若 $X_1$ 和 $X_2$ 是相互独立的次高斯随机变量，均值为 $0$ 且参数分别为 $\sigma_1^2$ 和 $\sigma_2^2$，那么它们的和 $X_1 + X_2$ 也是次高斯随机变量，并且其参数为 $\sigma_1^2 + \sigma_2^2$。
+    3. （有界变量即次高斯）结合霍夫丁引理，说明若 $\mathbb{E}[X]=0$ 且 $X\in[a,b]$，那么 $X$ 是参数为
     	$$
     	\sigma^2=\frac{(b-a)^2}{4}
     	$$
@@ -193,11 +193,13 @@
 
 ### 次指数分布初探 (Introduction to Sub-Exponential Distributions)
 === "中文"
-    称随机变量 $X$ 为参数 $(\nu,\alpha)$ 的次指数（sub-exponential）随机变量（$\nu,\alpha>0$），如果其中心化后的矩生成函数满足：对任意 $|\lambda|\le 1/\alpha$，
+    在前面的练习中我们探讨了次高斯分布。然而，许多常见的随机变量（例如高斯随机变量的平方，即卡方分布）的尾部比高斯分布更厚，它们并不满足次高斯分布的条件。为此，我们引入次指数分布的概念。
+
+    我们称一个随机变量 $X$ 为参数为 $(\nu, \alpha)$ 的次指数（sub-exponential）随机变量（$\nu,\alpha>0$），如果其中心化后的矩生成函数满足：对任意 $|\lambda|\le 1/\alpha$，
     $$
     \mathbb{E}\big[e^{\lambda(X-\mathbb{E}[X])}\big]\le \exp\left(\frac{\lambda^2\nu}{2}\right).
     $$
-    1. （集中性）请证明：对任意 $t\ge0$，
+    1. （集中性）请证明：如果 $X$ 是参数为 $(\nu, \alpha)$ 的次指数随机变量，那么对任意 $t\ge0$，
     	$$
     	\Pr\big(X-\mathbb{E}[X]\ge t\big)\le
     	\begin{cases}
@@ -209,7 +211,7 @@
     	$$
     	\left(\sum_{i=1}^N w_i^2\nu_i,\;\max_{i\in[N]}|w_i|\alpha_i\right).
     	$$
-    3. （广义伯恩斯坦不等式）结合前两问，证明对
+    3. （广义伯恩斯坦不等式）结合前两问，证明在上一问的条件下，对
     	$$
     	S_N=\sum_{i=1}^N w_iX_i,
     	$$
@@ -254,7 +256,7 @@
 
 ### 不相关变量集中不等式 (Concentration Inequality for Uncorrelated Variables)
 === "中文"
-    设 $X_1,X_2,\dots$ 是一列中心化（$\mathbb{E}[X_i]=0$）且两两不相关的随机变量，即对任意 $i\ne j$，
+    在正文中，我们探讨了独立随机变量之和的集中不等式。现在我们放宽条件，看看如果随机变量仅仅是不相关的，能得到怎样的集中性。设 $X_1,X_2,\dots$ 是一列中心化（$\mathbb{E}[X_i]=0$）且两两不相关的随机变量，即对任意 $i\ne j$，
     $$
     \mathbb{E}[X_iX_j]=\mathbb{E}[X_i]\mathbb{E}[X_j].
     $$
@@ -262,7 +264,7 @@
     	$$
     	\Pr\left(\left|\frac{1}{n}\sum_{i=1}^n X_i\right|\ge t\right)\le \frac{C}{nt^2}.
     	$$
-    2. 利用上述结论，证明 $L^2$ 弱大数定律：若 $X_1,X_2,\dots$ 的期望均为 $\mu$、方差一致有界（$\sup_i\mathrm{Var}(X_i)<+\infty$）且两两不相关，则
+    2. 利用上述结论，证明 $L^2$ 弱大数定律：若 $X_1,X_2,\dots$ 的期望均为 $\mu$、方差一致有界（$\sup_i\mathrm{Var}(X_i)<+\infty$）且两两不相关，则其经验均值依概率收敛到 $\mu$，即
     	$$
     	\frac{1}{n}\sum_{i=1}^n X_i \xrightarrow{p} \mu.
     	$$
@@ -291,6 +293,8 @@
     $$
     1. 请证明这 $n$ 个随机变量 $X_v$ 都服从 $\{0,1\}$ 上的均匀分布，且它们两两独立。
     2. 请证明：对任何由 $\{X_v\}_{v\ne\mathbf{0}}$ 生成的事件 $A$（即 $A\in\sigma(\{X_v\}_{v\ne\mathbf{0}})$），其概率 $\Pr(A)$ 要么为 $0$，要么至少为 $\dfrac{1}{n+1}$。
+    
+    注：这说明，由两两独立随机变量构成的系统，不能保证指数尾部概率的衰减。
     
 === "English"
     The previous exercise shows that uncorrelatedness gives only polynomial concentration. Can pairwise independence plus boundedness yield exponential concentration like full independence? This problem provides a counterexample.

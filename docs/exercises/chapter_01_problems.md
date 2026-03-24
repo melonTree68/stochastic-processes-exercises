@@ -4,7 +4,7 @@
 
 ### 双选之力 (Power of Two Choices)
 === "中文"
-	在投球入箱模型中，将 $n$ 个球独立均匀随机地投入 $n$ 个箱子，最大负载高概率是 $O\left(\frac{\log n}{\log\log n}\right)$。现在改变规则：每次投球时，独立均匀随机挑选两个不同箱子，把球放入这两个箱子中当前球更少的那个（若一样多则任意选）。
+	在投球入箱模型中，将 $n$ 个球独立均匀随机地投入 $n$ 个箱子，最大负载高概率是 $O\left(\frac{\log n}{\log\log n}\right)$。这就是大自然的“不公平性”。现在假设我们改变投球规则：每次投球时，独立均匀随机挑选两个不同箱子，把球放入这两个箱子中当前球更少的那个（若一样多则任意选）。
     
     令 $\nu_k$ 表示投入全部 $n$ 个球后，负载至少为 $k$ 的箱子数量（$k\le n$）。
     
@@ -37,11 +37,11 @@
 
 ### 乐观的馈赠 (Gift of Optimism)
 === "中文"
-    在有 $n$ 个臂的多臂老虎机中，设第 $t$ 次拉动前，第 $i$ 个臂已被拉动 $T_i(t-1)$ 次，其经验均值为 $\hat\mu_{i,T_i(t-1)}$。UCB 算法在前 $n$ 轮先各拉一次；对 $t\ge n+1$，选择最大化
+    在正文中讨论多臂老虎机时，我们提到，即使不知晓各个臂的期望收益率，通过置信区间构建的 UCB（Upper Confidence Bound）算法能够实现更优的次线性懊悔。设第 $t$ 次拉动前，第 $i$ 个臂已被拉动 $T_i(t-1)$ 次，其经验均值为 $\hat\mu_{i,T_i(t-1)}$。UCB 算法在前 $n$ 轮先各拉一次，以保证后续 $T_i(t-1)>0$；对 $t\ge n+1$，选择最大化
     $$
     U_{i,t}=\hat\mu_{i,T_i(t-1)}+\sqrt{\frac{2\ln t}{T_i(t-1)}}
     $$
-    的臂（并列随机）。设臂 $1$ 是最优臂，$\Delta_i=\mu_1-\mu_i$。
+    的臂。如果取到最大值的有多个臂，则随机选择其中一个。设臂 $1$ 是最优臂（玩家并不知道这个信息），并令 $\Delta_i=\mu_1-\mu_i$。
     
     1. 证明：若第 $t$ 步选择了次优臂 $i$（即 $U_{i,t}\ge U_{1,t}$），则至少发生以下三种情况之一：
     	- 事件 $A$：最优臂被严重低估：
@@ -65,7 +65,7 @@
     	$$
 	    O\left(\sqrt{nT\ln T}\right).
     	$$
-    4. 解释直观上为什么 UCB 往往优于 ETC。
+    4. 请指出直观上UCB算法为什么比ETC算法的表现更好？
     
 === "English"
     In multi-armed bandits with $n$ arms, let $T_i(t-1)$ be the number of pulls of arm $i$ before round $t$, and let $\hat\mu_{i,T_i(t-1)}$ be its empirical mean. The upper confidence bound (UCB) algorithm pulls each arm once in the first $n$ rounds. For $t\ge n+1$, it chooses an arm maximizing
@@ -102,10 +102,10 @@
 
 ### 纯粹的探索 (Pure Exploration)
 === "中文"
-    考虑多臂老虎机的纯探索（pure exploration）变体：目标是在尽量少的拉动后停止，并以至少 $1-\delta$ 的概率输出均值最大的臂（$\delta\in(0,1)$）。
+    考虑多臂老虎机的纯探索（pure exploration）变体，我们不在乎累计懊悔，我们唯一的目的是：拉动尽可能少的次数之后结束探索，并以至少 $1-\delta$ 的概率输出均值最大的臂（$\delta\in(0,1)$）。
     
     1. 若已知所有次优臂与最优臂的均值差都至少为 $\Delta>0$（但不知道最优臂是谁），请基于霍夫丁不等式设计一个简单算法（如均匀探索），并给出总拉动次数上界以保证成功概率至少 $1-\delta$。
-    2. 考虑连续淘汰（successive elimination）算法：维护活跃集 $S$，初始 $S=[n]$。第 $r$ 轮对活跃臂各拉一次，得到经验均值 $\hat\mu_{i,r}$，令
+    2. 均匀探索算法存在的问题是会在明显极差的臂上浪费大量单次测试成本。我们可以考虑一个更聪明的连续淘汰（successive elimination）算法：维护活跃集 $S$，初始 $S=[n]$。第 $r$ 轮对活跃臂各拉一次，得到经验均值 $\hat\mu_{i,r}$，令
     	$$
     	C_r=\sqrt{\frac{\ln(4nr^2/\delta)}{2r}}.
     	$$
@@ -155,14 +155,14 @@
     $$
 	T=O\left(\frac{1}{\varepsilon^2}\log\frac{1}{\delta}\right)
     $$
-    个样本可区分 $\mathrm{Ber}(1/2)$ 与 $\mathrm{Ber}(1/2+\varepsilon)$，且正确率至少 $1-\delta$。本题要求证明该量级最优。
+    个样本可区分 $\mathrm{Ber}(1/2)$ 与 $\mathrm{Ber}(1/2+\varepsilon)$，且正确率至少 $1-\delta$。在本题中，我们将证明（在忽略常数倍的意义下）这一算法是最优的。
     
     设
     $$
     L=\frac{1}{100\varepsilon^2}\log\frac{1}{4\delta},\qquad
     \varepsilon\in(0,1/8),\ \delta\in(0,e^{-4}/4).
     $$
-    先考虑确定性算法（随机性仅来自抛硬币），并反设存在满足要求且 $\mathbb{E}_0[T]\le L$ 的算法 $\mathcal{A}$。记 $\Pr_i,\mathbb{E}_i$ 分别表示输入为情形 $i$（$i=0$ 公平，$i=1$ 有偏）时的概率与期望。样本空间 $\Omega=\{0,1\}^*$。
+    先我们先考虑确定性算法，即随机性的唯一来源是扔硬币的结果。假设存在满足要求且 $\mathbb{E}_0[T]\le L$ 的算法 $\mathcal{A}$。记 $\Pr_i,\mathbb{E}_i$ 分别表示输入为情形 $i$（$i=0$ 表示公平，$i=1$ 表示有偏）时的概率与期望。我们的样本空间为 $\Omega=\{0,1\}^*$。
     
     定义事件：
 
@@ -176,11 +176,11 @@
 
     - $C$: 算法输出 $0$（判断为公平硬币）。
     
-    1. 使用如下定理（无需证明）证明：
+    1. 下面这个定理是切比雪夫不等式的推广，请使用该定理（无需证明）证明：
     	$$
     	\Pr_0(A\cap B\cap C)\ge\frac14.
     	$$
-    	定理：若 $X_1,\dots,X_N$ 是独立伯努利变量，
+    	定理：若 $X_1,\dots,X_N$ 是独立伯努利随机变量，
     	$$
     	S_k=\sum_{i=1}^k\left(X_i-\mathbb{E}[X_i]\right),
     	$$
@@ -198,7 +198,7 @@
     	\mathbb{E}_0[T]=\Omega\left(\frac{1}{\varepsilon^2}\log\frac{1}{\delta}\right)
     	$$
     	是否仍成立？为什么？
-    5. 若你了解 KL 散度，请计算单次抛掷下这两种伯努利分布的 KL 散度，并直观解释为什么需要与 $1/\varepsilon^2$ 同阶的信息量才能把两者区分开。
+    5. 若你了解 KL 散度，请计算单次抛掷下这两种伯努利分布的 KL 散度，你能否直观地解释，为了使两个分布产生的可观测序列在统计上变得“足够好区分”，我们需要积累与 $1/\varepsilon^2$ 成正比的信息量？
     
 === "English"
     In fair-coin testing, we know that
@@ -256,13 +256,13 @@
 === "中文"
     上一题里我们证明了要区分公平硬币和偏差 $\eps$ 的硬币，至少需要 $\Omega(\eps^{-2}\log \delta^{-1})$ 的样本。本题我们将这一结论推广，来证明多臂老虎机（MAB）的懊悔下界。
     
-    考虑 $K=n+1$ 个臂，编号 $0,1,\dots,n$。构造实例集合 $\mathcal{I}=\{\nu_0,\nu_1,\dots,\nu_n\}$:
+    考虑 $K=n+1$ 个臂，编号 $0,1,\dots,n$。我们构造实例集合 $\mathcal{I}=\{\nu_0,\nu_1,\dots,\nu_n\}$:
 
-    - 实例 $\nu_0$：臂 $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$，其余 $i\in[n]$ 满足 $\mathrm{Ber}(\tfrac12)$；
+    - 实例 $\nu_0$：臂 $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$ 是最优的，其余 $i\in[n]$ 满足 $\mathrm{Ber}(\tfrac12)$；
   
-    - 实例 $\nu_j$（$j\in[n]$）：臂 $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$，臂 $j\sim\mathrm{Ber}(\tfrac12+\varepsilon)$（最优），其余臂 $\mathrm{Ber}(\tfrac12)$。
+    - 实例 $\nu_j$（$j\in[n]$）：臂 $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$，臂 $j\sim\mathrm{Ber}(\tfrac12+\varepsilon)$ 是最优的，其余臂 $\mathrm{Ber}(\tfrac12)$。
     
-    称算法是 $(\varepsilon,\delta)$-PAC 的，若停止时以至少 $1-\delta$ 的概率输出一个 $\varepsilon$-最优臂。记 $T_j$ 为臂 $j$ 被拉动总次数，$\mathbb{E}_\nu[\cdot]$ 为实例 $\nu$ 下期望。
+    在这个问题上，我们称一个算法是 $(\varepsilon,\delta)$-PAC （probably approximately correct）的，若它在停止时以至少 $1-\delta$ 的概率输出一个 $\varepsilon$-最优臂（即其与最优臂的期望受益之差小于 $\varepsilon$）。记 $T_j$ 为臂 $j$ 被拉动总次数，$\mathbb{E}_\nu[\cdot]$ 为实例 $\nu$ 下期望，注意，此处的随机性来自算法本身的随机性以及臂的收益的随机性。
     
     1. 假设 $\mathcal{G}$ 是 $(\varepsilon/2,\delta)$-PAC 算法（$\delta<1/8$）。利用上一题结论论证：存在常数 $c>0$，使得任意 $j\in[n]$ 在实例 $\nu_0$ 下都有
     	$$
@@ -272,7 +272,7 @@
     	$$
     	R_T(\mathcal{A},\nu)=\Omega(\sqrt{nT}).
     	$$
-    	提示：取 $\varepsilon=2\sqrt{n/T}$，若假设 $\mathcal{A}$ 在所有实例上懊悔都很小，可构造纯探索算法：运行 $\mathcal{A}$ 共 $T$ 轮后输出被拉动次数最多的臂，并与第 1 问矛盾。
+    	提示：取 $\varepsilon=2\sqrt{n/T}$，若假设 $\mathcal{A}$ 在所有实例上懊悔都很小，可构造纯探索算法：运行 $\mathcal{A}$ 共 $T$ 轮后输出被拉动次数最多的臂，利用第一问的结论导出矛盾。。
     
 === "English"
     In the previous problem, we proved that distinguishing a fair coin from a biased coin with bias $\eps$ requires at least $\Omega(\eps^{-2}\log \delta^{-1})$ samples. In this problem, we will generalize this result to prove a regret lower bound for multi-armed bandits (MAB).
@@ -299,11 +299,17 @@
 
 ### 均匀性测试 (Uniformity Testing)
 === "中文"
-    考虑样本空间 $\Omega=\{1,2,\dots,n\}$。对分布 $q$，记 $q_i=\Pr(X=i)$。对分布 $p,q$，总变分距离定义为
+	在公平硬币检验中，我们讲了如何区分公平硬币和有偏硬币。现在我们来推广这个问题。
+
+    考虑样本空间 $\Omega=\{1,2,\dots,n\}$。对$\Omega$ 上的任意一个分布 $q$，令 $q_i$ 表示从分布 $q$ 中采样一次得到样本为 $i$ 的概率（$i \in [n]$）。对于 $\Omega$ 上的两个分布 $p$ 和 $q$，其总变分距离定义为
     $$
     d_{\mathrm{TV}}(p,q)=\frac12\sum_{i=1}^n|p_i-q_i|.
     $$
-    令 $\mu$ 为均匀分布，$\pi$ 为未知分布。已知 $\pi$ 要么等于 $\mu$，要么满足 $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$（$\varepsilon\in(0,1/2)$）。目标是用尽量少样本做判别。
+    令 $\mu$ 是 $\Omega$ 上的均匀分布，$\pi$ 是 $\Omega$ 上的一个未知分布。假设我们已经知道 $\pi$ 要么就是均匀分布（即 $\pi = \mu$），要么与均匀分布差别很大，即 $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$（$\varepsilon\in(0,1/2)$）。均匀性测试问题指的是，通过从分布中采样，来判断它到底是均匀分布还是距离均匀分布很远。在这个问题里，我们来设计一个高效的均匀性测试算法，即使用尽量少的样本来保证至少 $1 - \delta$ 的判断准确概率。
+
+	大家可以首先猜一下我们至少需要多少个样本才能达到这个目标。在正文里，我们讲了奖券收集问题，知道平均需要大约 $n \log n$ 个样本，才能够保证每一个样本都被采集到。这是否说明，判断目标分布是不是均匀分布，至少需要 $\Omega(n \log n)$ 个样本呢？
+
+	实际上，我们可以用少得多的样本达到这个目标。我们一起来设计一个算法，只要用 $O(\sqrt{n})$ 的样本就可以了。假设 $n = 10000$，那么我们只要取几百个样本就能判断是不是均匀分布，我们并不需要获得绝大多数样本的信息。我们用到的工具就是正文提到的生日悖论，我们知道如果 $\pi$ 是均匀分布，那么实际上大约 $\Theta(\sqrt{n})$ 个样本就可以保证高概率出现两个同样的样本。我们接下来的讨论将说明，均匀分布是让这件事最难发生的分布，并利用这个事实来判断一个分布是不是均匀分布。
     
     1. 令
     	$$
@@ -313,6 +319,8 @@
     	$$
     	\Pr(X=Y)=\|\pi\|^2.
     	$$
+		这里 $\|\pi\|^2$ 被称为碰撞概率。
+	
     2. 证明：
    
     	1) $\|\mu\|^2=1/n$；
@@ -335,12 +343,12 @@
     	\mathrm{Var}(Z)\le\frac{4\|\pi\|^3}{m}+\frac{4\|\pi\|^2}{m^2};
     	$$
 
-    	3) 无论 $\pi=\mu$ 或 $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$，都有
+    	2) 无论 $\pi=\mu$ 或 $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$，都有
     	$$
     	\Pr\left(|Z-\mathbb{E}[Z]|\ge\varepsilon^2\mathbb{E}[Z]\right)
     	\le \frac{4\sqrt n}{\varepsilon^4m}+\frac{4n}{\varepsilon^4m^2}.
     	$$
-    4. 考虑算法：独立采样
+    4. 根据以上结论，我们知道当 $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$ 时碰撞发生概率明显大于均匀分布下碰撞发生概率，于是我们可以考虑根据碰撞发生频率 $Z$ 的大小来判断 $\pi$ 是否为均匀分布。考虑算法：独立采样
     	$$
     	m=\frac{100\sqrt n}{\varepsilon^4}
     	$$
@@ -412,10 +420,12 @@
     $$
     X_1,X_2,\dots,X_T\sim p,
     $$
-    希望输出经验分布 $\hat p$，使得以至少 $1-\delta$ 的概率满足
+    希望输出经验分布 $\hat p$，使得 $\hat{p}$ 尽可能接近 $p$，具体而言，我们希望以至少 $1-\delta$ 的概率满足
     $$
-    d_{\mathrm{TV}}(p,\hat p)=\frac12\sum_{i=1}^n|p_i-\hat p_i|\le\varepsilon.
+    d_{\mathrm{TV}}(p,\hat p)=\frac12\sum_{i=1}^n|p_i-\hat p_i|\le\varepsilon,
     $$
+	其中 $\varepsilon, \delta \in (0, 1)$.
+
     1. 先考虑 $n=2$。请设计一个算法，使用
     	$$
 	    T=O\left(\frac{1}{\varepsilon^2}\log\frac{1}{\delta}\right)
