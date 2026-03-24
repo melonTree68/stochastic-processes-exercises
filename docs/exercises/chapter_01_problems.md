@@ -19,7 +19,7 @@
     	请解出 $\beta_{k+6}$ 的通项公式，并据此证明只需 $k^*=O(\log\log n)$ 次迭代，上界 $\beta_{k^*}$ 就会下降到 $O(\log n)$ 级别。
     
 === "English"
-	In the balls-into-bins model, when $n$ balls are independently and uniformly thrown into $n$ bins, the maximum load is typically $O\left(\frac{\log n}{\log\log n}\right)$. Now change the rule: for each ball, pick two distinct bins independently and uniformly at random, and place the ball into the currently less loaded one (break ties arbitrarily).
+	In the balls-into-bins model, when $n$ balls are independently and uniformly thrown into $n$ bins, the maximum load is typically $O\left(\frac{\log n}{\log\log n}\right)$. Now change the rule: for each ball, pick two distinct bins independently and uniformly at random, and place the ball into the currently less loaded one (if tied, choose arbitrarily).
     
     Let $\nu_k$ be the number of bins with load at least $k$ after all $n$ balls are placed ($k\le n$).
     
@@ -37,7 +37,7 @@
 
 ### 乐观的馈赠 (Gift of Optimism)
 === "中文"
-    在多臂老虎机中，设第 $t$ 次拉动前，第 $i$ 个臂已被拉动 $T_i(t-1)$ 次，其经验均值为 $\hat\mu_{i,T_i(t-1)}$。UCB 算法在前 $n$ 轮先各拉一次；对 $t\ge n+1$，选择最大化
+    在有 $n$ 个臂的多臂老虎机中，设第 $t$ 次拉动前，第 $i$ 个臂已被拉动 $T_i(t-1)$ 次，其经验均值为 $\hat\mu_{i,T_i(t-1)}$。UCB 算法在前 $n$ 轮先各拉一次；对 $t\ge n+1$，选择最大化
     $$
     U_{i,t}=\hat\mu_{i,T_i(t-1)}+\sqrt{\frac{2\ln t}{T_i(t-1)}}
     $$
@@ -68,11 +68,11 @@
     4. 解释直观上为什么 UCB 往往优于 ETC。
     
 === "English"
-    In multi-armed bandits, let $T_i(t-1)$ be the number of pulls of arm $i$ before round $t$, and let $\hat\mu_{i,T_i(t-1)}$ be its empirical mean. UCB pulls each arm once in the first $n$ rounds. For $t\ge n+1$, it chooses an arm maximizing
+    In multi-armed bandits with $n$ arms, let $T_i(t-1)$ be the number of pulls of arm $i$ before round $t$, and let $\hat\mu_{i,T_i(t-1)}$ be its empirical mean. The upper confidence bound (UCB) algorithm pulls each arm once in the first $n$ rounds. For $t\ge n+1$, it chooses an arm maximizing
     $$
     U_{i,t}=\hat\mu_{i,T_i(t-1)}+\sqrt{\frac{2\ln t}{T_i(t-1)}}.
     $$
-    Break ties randomly. Assume arm $1$ is optimal and define $\Delta_i=\mu_1-\mu_i$.
+    If there are multiple arms with the same maximum value, choose one randomly. Assume arm $1$ is optimal and define $\Delta_i=\mu_1-\mu_i$.
     
     1. Prove that if at round $t$ a suboptimal arm $i$ is selected (i.e., $U_{i,t}\ge U_{1,t}$), then at least one of the following holds:
     	- Event $A$: the optimal arm is severely underestimated:
@@ -96,7 +96,7 @@
     	$$
 	    O\left(\sqrt{nT\ln T}\right).
     	$$
-    4. Give an intuitive explanation for why UCB often outperforms ETC.
+    4. Give an intuitive explanation for why UCB often outperforms the explore-then-commit (ETC) algorithm.
     
 --8<-- "solutions/chapter_01/problems/problem_optimism.md"
 
@@ -165,12 +165,15 @@
     先考虑确定性算法（随机性仅来自抛硬币），并反设存在满足要求且 $\mathbb{E}_0[T]\le L$ 的算法 $\mathcal{A}$。记 $\Pr_i,\mathbb{E}_i$ 分别表示输入为情形 $i$（$i=0$ 公平，$i=1$ 有偏）时的概率与期望。样本空间 $\Omega=\{0,1\}^*$。
     
     定义事件：
+
     - $A$: $T\le4L$；
+  
     - $B$: 对任意 $1\le t\le4L$，
       $$
       \left|K_t-\frac{t}{2}\right|\le\sqrt{L\log\frac{1}{4\delta}},
       $$
       其中 $K_t$ 为前 $t$ 次抛掷中正面个数；
+
     - $C$: 算法输出 $0$（判断为公平硬币）。
     
     1. 使用如下定理（无需证明）证明：
@@ -212,12 +215,15 @@
     First consider deterministic algorithms (all randomness comes from coin tosses). For contradiction, assume there exists an algorithm $\mathcal{A}$ meeting the guarantee with $\mathbb{E}_0[T]\le L$. Let $\Pr_i$ and $\mathbb{E}_i$ denote probability and expectation under hypothesis $i$ ($i=0$ fair, $i=1$ biased). The sample space is $\Omega=\{0,1\}^*$.
     
     Define events:
+
     - $A$: $T\le4L$;
+
     - $B$: for all $1\le t\le4L$,
       $$
       \left|K_t-\frac{t}{2}\right|\le\sqrt{L\log\frac{1}{4\delta}},
       $$
       where $K_t$ is the number of heads in the first $t$ tosses;
+	  
     - $C$: algorithm outputs $0$ (declares fair coin).
     
     1. Using the following theorem (no proof needed), show
@@ -246,15 +252,14 @@
     
 --8<-- "solutions/chapter_01/problems/problem_distinguishing_cost.md"
 
-### 必输之战 (An Unavoidable Loss)
+### 必输的赌博 (A Losing Gamble)
 === "中文"
-    在上一题基础上，推广到多臂老虎机（MAB）懊悔下界。
+    上一题里我们证明了要区分公平硬币和偏差 $\eps$ 的硬币，至少需要 $\Omega(\eps^{-2}\log \delta^{-1})$ 的样本。本题我们将这一结论推广，来证明多臂老虎机（MAB）的懊悔下界。
     
-    考虑 $K=n+1$ 个臂，编号 $0,1,\dots,n$。构造实例集合
-    $$
-    \mathcal{I}=\{\nu_0,\nu_1,\dots,\nu_n\}:
-    $$
+    考虑 $K=n+1$ 个臂，编号 $0,1,\dots,n$。构造实例集合 $\mathcal{I}=\{\nu_0,\nu_1,\dots,\nu_n\}$:
+
     - 实例 $\nu_0$：臂 $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$，其余 $i\in[n]$ 满足 $\mathrm{Ber}(\tfrac12)$；
+  
     - 实例 $\nu_j$（$j\in[n]$）：臂 $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$，臂 $j\sim\mathrm{Ber}(\tfrac12+\varepsilon)$（最优），其余臂 $\mathrm{Ber}(\tfrac12)$。
     
     称算法是 $(\varepsilon,\delta)$-PAC 的，若停止时以至少 $1-\delta$ 的概率输出一个 $\varepsilon$-最优臂。记 $T_j$ 为臂 $j$ 被拉动总次数，$\mathbb{E}_\nu[\cdot]$ 为实例 $\nu$ 下期望。
@@ -270,13 +275,12 @@
     	提示：取 $\varepsilon=2\sqrt{n/T}$，若假设 $\mathcal{A}$ 在所有实例上懊悔都很小，可构造纯探索算法：运行 $\mathcal{A}$ 共 $T$ 轮后输出被拉动次数最多的臂，并与第 1 问矛盾。
     
 === "English"
-    Building on the previous problem, derive a lower bound on regret for multi-armed bandits (MAB).
+    In the previous problem, we proved that distinguishing a fair coin from a biased coin with bias $\eps$ requires at least $\Omega(\eps^{-2}\log \delta^{-1})$ samples. In this problem, we will generalize this result to prove a regret lower bound for multi-armed bandits (MAB).
     
-    Consider a bandit with $K=n+1$ arms indexed by $0,1,\dots,n$. Construct the instance family
-    $$
-    \mathcal{I}=\{\nu_0,\nu_1,\dots,\nu_n\}:
-    $$
+    Consider a bandit with $K=n+1$ arms indexed by $0,1,\dots,n$. Construct the instance family $\mathcal{I}=\{\nu_0,\nu_1,\dots,\nu_n\}:$
+
     - Instance $\nu_0$: arm $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$, and each other arm $i\in[n]$ has $\mathrm{Ber}(\tfrac12)$;
+  
     - Instance $\nu_j$ ($j\in[n]$): arm $0\sim\mathrm{Ber}(\tfrac12+\tfrac\varepsilon2)$, arm $j\sim\mathrm{Ber}(\tfrac12+\varepsilon)$ (optimal), and all other arms are $\mathrm{Ber}(\tfrac12)$.
     
     An algorithm is $(\varepsilon,\delta)$-PAC if it outputs an $\varepsilon$-optimal arm with probability at least $1-\delta$ upon stopping. Let $T_j$ be the total number of pulls of arm $j$, and $\mathbb{E}_\nu[\cdot]$ denote expectation under instance $\nu$.
@@ -310,7 +314,9 @@
     	\Pr(X=Y)=\|\pi\|^2.
     	$$
     2. 证明：
+   
     	1) $\|\mu\|^2=1/n$；
+   
     	2) 若 $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$，则
     	$$
     	\|\pi\|^2-\|\mu\|^2\ge\frac{4\varepsilon^2}{n}.
@@ -321,17 +327,20 @@
     	Z=\frac{1}{\binom m2}\sum_{1\le i<j\le m}Y_{ij}.
     	$$
     	证明：
+
     	1) $\mathbb{E}[Z]=\|\pi\|^2$；
+   
     	2)
     	$$
     	\mathrm{Var}(Z)\le\frac{4\|\pi\|^3}{m}+\frac{4\|\pi\|^2}{m^2};
     	$$
+
     	3) 无论 $\pi=\mu$ 或 $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$，都有
     	$$
     	\Pr\left(|Z-\mathbb{E}[Z]|\ge\varepsilon^2\mathbb{E}[Z]\right)
     	\le \frac{4\sqrt n}{\varepsilon^4m}+\frac{4n}{\varepsilon^4m^2}.
     	$$
-    4. 考虑算法：采样
+    4. 考虑算法：独立采样
     	$$
     	m=\frac{100\sqrt n}{\varepsilon^4}
     	$$
@@ -357,7 +366,9 @@
     	\Pr(X=Y)=\|\pi\|^2.
     	$$
     2. Prove:
+   
     	1) $\|\mu\|^2=1/n$;
+
     	2) if $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$, then
     	$$
     	\|\pi\|^2-\|\mu\|^2\ge\frac{4\varepsilon^2}{n}.
@@ -368,11 +379,14 @@
     	Z=\frac{1}{\binom m2}\sum_{1\le i<j\le m}Y_{ij}.
     	$$
     	Prove:
+
     	1) $\mathbb{E}[Z]=\|\pi\|^2$;
+
     	2)
     	$$
     	\mathrm{Var}(Z)\le\frac{4\|\pi\|^3}{m}+\frac{4\|\pi\|^2}{m^2};
     	$$
+
     	3) regardless of whether $\pi=\mu$ or $d_{\mathrm{TV}}(\pi,\mu)\ge\varepsilon$,
     	$$
     	\Pr\left(|Z-\mathbb{E}[Z]|\ge\varepsilon^2\mathbb{E}[Z]\right)
@@ -382,7 +396,7 @@
     	$$
     	m=\frac{100\sqrt n}{\varepsilon^4}
     	$$
-    	points from $\pi$ and compute $Z$. If
+    	points independently from $\pi$ and compute $Z$. If
     	$$
     	Z\ge\frac{1+2\varepsilon^2}{n},
     	$$
@@ -392,7 +406,9 @@
 
 ### 学习离散分布 (Learning a Discrete Distribution)
 === "中文"
-    令未知分布 $p$ 定义在 $\Omega=\{1,2,\dots,n\}$ 上。给定 $T$ 个独立样本
+	假设你计划在校园里开一家咖啡店，想了解学生们最喜欢的咖啡口味。菜单上有 $n$ 种选择。你决定进行一次问卷调查，随机询问学生他们最喜欢的咖啡。问题是：如何利用这些数据来推断学生们的口味偏好？你需要询问多少名学生？
+
+    我们将这个问题转化为一个数学模型。令 $p$ 为样本空间 $\Omega = \set{1, 2, \dots, n}$ 上的一个未知分布。给定 $T$ 个独立样本
     $$
     X_1,X_2,\dots,X_T\sim p,
     $$
@@ -405,6 +421,7 @@
 	    T=O\left(\frac{1}{\varepsilon^2}\log\frac{1}{\delta}\right)
     	$$
     	个样本，以至少 $1-\delta$ 概率找到满足 $d_{\mathrm{TV}}(p,\hat p)\le\varepsilon$ 的 $\hat p$，并给出分析。
+
     2. 对一般 $n\ge2$，证明
     	$$
     	d_{\mathrm{TV}}(p,\hat p)=\max_{S\subseteq[n]}\sum_{j\in S}(p_j-\hat p_j).
@@ -428,7 +445,9 @@
     	个样本，就能以至少 $1-\delta$ 概率满足 $d_{\mathrm{TV}}(p,\hat p)\le\varepsilon$。
     
 === "English"
-    Let an unknown distribution $p$ be defined on $\Omega=\{1,2,\dots,n\}$. Given $T$ i.i.d. samples
+	Suppose you want to open a coffee shop on campus and are curious about students' favorite coffee flavors. The menu has $n$ options. You decide to conduct a survey, randomly asking students about their preferences. The question is: how can you use this data to infer the students' taste preferences? How many students do you need to ask?
+
+    We consider a simple model. Let $p$ be an unknown distribution defined on $\Omega=\{1,2,\dots,n\}$. Given $T$ i.i.d. samples
     $$
     X_1,X_2,\dots,X_T\sim p,
     $$
@@ -441,6 +460,7 @@
 	    T=O\left(\frac{1}{\varepsilon^2}\log\frac{1}{\delta}\right)
     	$$
     	samples, which outputs $\hat p$ satisfying $d_{\mathrm{TV}}(p,\hat p)\le\varepsilon$ with probability at least $1-\delta$, and analyze it.
+
     2. For general $n\ge2$, prove
     	$$
     	d_{\mathrm{TV}}(p,\hat p)=\max_{S\subseteq[n]}\sum_{j\in S}(p_j-\hat p_j).
@@ -473,7 +493,7 @@
     $$
     其中 $X_i\in\mathbb{R}^d$ 独立同分布采样自未知分布 $\mu$，标签由布尔函数 $C:\mathbb{R}^d\to\{0,1\}$ 给出。学习算法 $\mathcal{A}$ 输出分类器
     $$
-    h=\mathcal{A}(\cdot,S_m),
+    h(\cdot)=\mathcal{A}(\cdot,S_m),
     $$
     误差为
     $$
@@ -483,7 +503,7 @@
     $$
     \Pr\big(R(\mathcal{A}(\cdot,S_m))\ge1/8\big)\ge1/8.
     $$
-    证明中可采用如下随机构造：令 $\mu$ 为 $\mathcal{X}$ 上均匀分布；对每个 $x\in\mathcal{X}$，独立均匀随机取 $Y_x\in\{0,1\}$，并定义随机函数 $C(x)=Y_x$。
+    为了证明这一结论，我们采用概率方法。令 $\mu$ 为 $\mathcal{X}$ 上均匀分布；对每个 $x\in\mathcal{X}$，独立均匀随机取 $Y_x\in\{0,1\}$，并定义随机函数 $C(x)=Y_x$。
     
     1. 先在随机标签 $\{Y_x\}_{x\in\mathcal{X}}$ 与随机样本 $S_m$ 上证明
     	$$
@@ -497,6 +517,8 @@
     	$$
     	\Pr\big(R(\mathcal{A}(\cdot,S_m))\ge1/8\big)\ge1/8.
     	$$
+
+	注：这一结论直观上说明了，如果目标函数是完全任意的，且我们只观察到了空间中一半的样本，那么对于剩下未见的一半样本，我们实际上没有获得任何信息，因此无法期望得到较低的泛化误差。这并非通常意义上的欠拟合（underfitting），而是强调了\emph{归纳偏置（inductive bias）}的必要性：即没有任何算法能在不依赖先验假设的情况下对所有问题都表现良好。
 === "English"
     In binary classification, given a sample set
     $$
@@ -504,7 +526,7 @@
     $$
     where $X_i\in\mathbb{R}^d$ are i.i.d. from an unknown distribution $\mu$, and labels are given by a Boolean function $C:\mathbb{R}^d\to\{0,1\}$, a learning algorithm $\mathcal{A}$ outputs a classifier
     $$
-    h=\mathcal{A}(\cdot,S_m),
+    h(\cdot)=\mathcal{A}(\cdot,S_m),
     $$
     with error
     $$
@@ -516,16 +538,18 @@
     $$
     You may use the following random construction: let $\mu$ be uniform on $\mathcal{X}$; for each $x\in\mathcal{X}$, independently sample $Y_x\in\{0,1\}$ uniformly and define $C(x)=Y_x$.
     
-    1. First prove over random labels $\{Y_x\}_{x\in\mathcal{X}}$ and random sample $S_m$ that
+    1. First prove that
     	$$
     	\mathbb{E}[R(\mathcal{A}(\cdot,S_m))]\ge\frac14,
     	$$
-    	and conclude there exists a fixed function $C$ such that (expectation only over $S_m$)
+		where the expectation is over both the random labels $\{Y_x\}_{x\in\mathcal{X}}$ and the random sample $S_m$. Then use this to conclude there exists a fixed function $C$ such that (expectation only over $S_m$)
     	$$
     	\mathbb{E}[R(\mathcal{A}(\cdot,S_m))]\ge\frac14.
     	$$
-    2. Based on part 1, prove there exists a deterministic $C$ such that
+    2. Based on part 1, prove there exists a deterministic function $C$ such that
     	$$
     	\Pr\big(R(\mathcal{A}(\cdot,S_m))\ge1/8\big)\ge1/8.
     	$$
+	
+	Remark: This result intuitively illustrates that if the target function is completely arbitrary and we only observe half of the samples in the space, then for the remaining half, we have no information, and thus cannot expect to achieve low generalization error. This is not underfitting in the usual sense, but rather emphasizes the necessity of inductive bias: no algorithm can perform well on all problems without relying on some prior assumptions.
 --8<-- "solutions/chapter_01/problems/problem_no_free_lunch.md"

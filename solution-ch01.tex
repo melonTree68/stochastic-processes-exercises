@@ -1,0 +1,702 @@
+\chapter{独立随机变量}
+\section*{练习与问题}
+
+\subsection*{练习}
+
+\htodo{正文超立方体随机游走的混合时间那里好像其实用过这个结论了}
+\ctodo{我们在正文直接引用这个结论吧！}
+\begin{exercise}[\textbf{再探奖券收集问题}]
+    在正文中，我们用切比雪夫不等式分析了奖券收集问题，得到了 $\Pr{Y\ge n H_n+t}\le \frac{2n^2}{t^2}$，其中 $n$ 是奖券类型总数， $Y$ 是收集齐全 $n$ 种奖券所需的抽奖次数。现在我们用另一种方法来计算这个问题的集中性。
+    \begin{enumerate}
+        \item 请用联合界分析存在一种奖券类型在前 $n H_n + t$ 次抽奖中都没有被抽到的概率。并据此证明
+        \[
+            \Pr{Y\ge n H_n+t}\le e^{-t/n}.
+        \]
+        \item 请根据上一问结论，计算在 $n=100$时，开多少包可以保证以至少 $99\%$ 的概率收集全一套？把你的界和切比雪夫不等式得到的界进行比较。
+    \end{enumerate}
+\end{exercise}
+\begin{solution}
+    设 $A_i$ 表示“奖券类型 $i$ 在前 $n H_n + t$ 次抽奖中都没有被抽到”的事件，则 $\Pr{A_i} = \tp{1 - \frac{1}{n}}^{n H_n + t}$. 因此，由联合界，存在至少一种奖券类型在前 $n H_n + t$ 次抽奖中都没有被抽到的概率为
+    \[
+        \Pr{\bigcup_{i=1}^n A_i} \le \sum_{i=1}^n \Pr{A_i} = n \tp{1 - \frac{1}{n}}^{n H_n + t}.
+    \]
+    由于 $\tp{1 - \frac{1}{n}}^n < e^{-1}$，$n\tp{1 - \frac{1}{n}}^{n H_n + t} < n e^{-H_n - t/n} \le e^{-t/n}$。因此，我们得到了奖券问题的集中性不等式：$\Pr{Y\ge n H_n+t}\le e^{-t/n}$。
+\end{solution}
+
+\begin{exercise}[\textbf{最大负载期望上界}]
+在正文中我们证明了，当 $n$ 个球随机投入 $n$ 个箱子中时，最大负载 $X = \max_{i\in[n]} X_i$ 满足：
+\[
+    \Pr{X \ge \frac{6 \log n}{\log \log n}} \le \frac{1}{n}.
+\]
+请利用这一尾部概率的结论，以及 $0\le X \le n$ 的事实，证明最大负载的期望满足 $\E{X} = O\tp{\frac{\log n}{\log\log n}}$。
+% \emph{提示：考虑使用全期望公式，或者把期望拆写成 $\E{X} = \E{X \mid A}\Pr{A} + \E{X \mid \bar{A}}\Pr{\bar{A}}$，其中事件 $A = \set{X < \frac{6\log n}{\log \log n}}$。}
+\end{exercise}
+\begin{solution}
+    记事件 $A = \set{X \ge \frac{6 \log n}{\log \log n}}$，由全期望公式及 $X \le n$ 有：
+    \[
+        \E{X} = \E{X \mid A}\Pr{A} + \E{X \mid \bar{A}}\Pr{\bar{A}} \le n \cdot \frac{1}{n} + \frac{6\log n}{\log\log n} \cdot 1 = 1 + \frac{6\log n}{\log\log n}.
+    \]
+    从而易得 $\E{X} = O\tp{\frac{\log n}{\log\log n}}$。
+\end{solution}
+
+\begin{exercise}[\textbf{精确计数内存下界}]
+在流模型计算流长度的问题中，我们提到，任何试图精确计算数据流长度 $m$ 的确定性算法，如果内存不足，则必然会出错。
+\begin{enumerate}
+    \item 请使用鸽巢原理，严格证明：任何状态数少于 $N+1$ 的确定性算法，必定无法对所有长度不超过 $N$ 的数据流给出精确的计数。这说明，任何保证精确计数的确定性算法至少需要 $\lceil \log_2(N+1) \rceil$ 比特的内存。
+    \item 如果不限制是确定性算法，而是允许使用随机算法，但依然要求算法在任何输入下都必须零误差输出流长度 $m$，它能否比确定性算法消耗更少的峰值内存空间？请证明你的结论。
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+    \begin{enumerate}
+        \item 从 $0$ 到 $N$ 共有 $N+1$ 种可能的计数结果。若状态数少于 $N+1$，由鸽巢原理，算法必会在某两个不同长度的流作为输入时，输出同一状态，所以必然会出错。
+        \item 不能。零误差意味着算法在面对任何流长度输入以及任何随机序列时，算法都必须能无歧义地输出对应长度。这要求不同输入长度所映射的输出集合两两不交。因此，为支持 $N+1$ 种不重叠的无误输出集合，所需的可达状态总数依然至少为 $N+1$。
+    \end{enumerate}
+\end{solution}
+
+
+
+\begin{exercise}[\textbf{多数人的智慧}]
+假设你有一个预测股市明天涨跌的算法。该算法每次独立进行预测时，都会以 $\frac{3}{4}$ 的概率给出正确的建议。为了提升预测的准确率，你决定让该算法独立运行 $N$ 次，并采用\emph{多数表决（majority vote）}的方式得出最终的投资决策。请证明：对于任意给定的允许出错的概率上限 $\delta \in (0, 1)$，只要运行次数满足
+\[
+    N \ge 8 \ln\tp{\frac{1}{\delta}},
+\]
+这种多数表决策略就能以至少 $1 - \delta$ 的概率给出正确的投资决策。
+% \emph{提示：可以设 $X_i$ 为第 $i$ 次预测给出错误答案的指示变量，并对其应用霍夫丁不等式。}
+\end{exercise}
+\begin{solution}
+    设 $X_i$ 为第 $i$ 次预测给出错误答案的指示变量，则 $X_i$ 是独立的伯努利随机变量，且 $\E{X_i} = \frac{1}{4}$。多数表决策略出错当且仅当 $\sum_{i=1}^N X_i \ge \frac{N}{2}$。由霍夫丁不等式，我们有
+    \[
+        \Pr{\sum_{i=1}^N X_i \ge \frac{N}{2}} = \Pr{\sum_{i=1}^N X_i - \E{\sum_{i=1}^N X_i} \ge \frac{N}{4}} \le e^{-\frac{2(N/4)^2}{N}} = e^{-\frac{N}{8}}.
+    \]
+    因此，只要 $N \ge 8\ln\tp{\frac{1}{\delta}}$，就有 $\Pr{\texttt{多数表决出错}} \le e^{-\frac{N}{8}} \le \delta$。
+\end{solution}
+
+\begin{exercise}[\textbf{高斯分布的集中性}]
+设 $X \sim \+N(0, 1)$ 为标准高斯随机变量。我们来探究其尾部概率的精确上下界。
+\begin{enumerate}
+    \item 请证明对于任意 $x > 0$，有如下积分不等式成立：
+    \[
+        (x^{-1} - x^{-3})e^{-x^2/2} \le \int_x^{+\infty} e^{-y^2/2} \dd y \le x^{-1} e^{-x^2/2}.
+    \]
+    \item 利用上述结论，证明标准高斯分布的尾部概率 $\Pr{\abs{X} \ge t}$ 的上下界（$t>0$），并说明当 $t$ 足够大时，该概率为 $\Theta\tp{t^{-1} \exp(-t^2/2)}$。进一步地，证明当 $t \to +\infty$ 时，有如下渐近等价关系：
+    \[
+        \Pr{\abs{X} \ge t} \sim \sqrt{\frac{2}{\pi}} t^{-1} \exp(-t^2/2).
+    \]
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+    \begin{enumerate}
+        \item 通过分部积分法，可以得到 \[
+            \int_x^{+\infty} e^{-y^2/2} \dd y =  \int_x^{+\infty} \frac{1}{y} \cdot \tp{ y e^{-y^2/2} } \dd y = x^{-1} e^{-x^2/2} - \int_x^{+\infty} y^{-2} e^{-y^2/2} \dd y.
+        \]
+        由于 $x>0$，
+        \[
+            \int_x^{+\infty} e^{-y^2/2} \dd y \le x^{-1} e^{-x^2/2}.
+        \]
+        再次使用分部积分法，可以得到
+        \begin{align*}
+            \int_x^{+\infty} \frac{1}{y^2} e^{-y^2/2} \dd y &= \stp{ -\frac{1}{y^3} e^{-y^2/2} }_x^{+\infty} - \int_x^{+\infty} \frac{3}{y^4} e^{-y^2/2} \dd y\\
+            &= \frac{1}{x^3} e^{-x^2/2} - \int_x^{+\infty} \frac{3}{y^4} e^{-y^2/2} \dd y\\
+            &< \frac{1}{x^3} e^{-x^2/2}.
+        \end{align*}
+        故而下界得证。
+        \item 由第一问的结论，我们有 $\Pr{\abs{X} \ge t} = 2\int_t^{+\infty} e^{-y^2/2}/\sqrt{2\pi}\dd y$ 的上下界分别为 $\sqrt{\frac{2}{\pi}} (t^{-1}-t^{-3})e^{-t^2/2}$ 和 $\sqrt{\frac{2}{\pi}} t^{-1} e^{-t^2/2}$。当 $t$ 足够大时，$t^{-3}$ 可以忽略，因此 $\Pr{\abs{X} \ge t}$ 的上下界都为 $\Theta\tp{t^{-1}\exp(-t^2/2)}$。由于 $\lim_{t\to +\infty}\frac{t^{-1}-t^{-3}}{t^{-1}} = 1$，因此 $\Pr{\abs{X} \ge t}$ 与 $\sqrt{\frac{2}{\pi}} t^{-1}\exp(-t^2/2)$ 渐近等价。
+    \end{enumerate}
+\end{solution}
+
+\begin{exercise}[\textbf{纠缠的极值}]
+设 $X_1, X_2, \dots, X_n$ 为 $n$ 个标准高斯分布的随机变量，即对所有 $i \in [n]$ 有 $X_i \sim \+N(0, 1)$。这里我们不要求它们是相互独立的。令 $Z = \max_{i \in [n]} X_i$ 表示它们的最大值。请证明：
+\[
+    \E{Z} \le \sqrt{2 \log n}.
+\]
+% \emph{提示：考虑对于任意参数 $t > 0$，利用指数函数的凸性与琴生不等式（Jensen's inequality），有 $e^{t\E{Z}} \le \E{e^{tZ}} = \E{\max_{i\in[n]} e^{t X_i}}$。然后对右侧放缩（最大值不小于任意非负项求和），得到关于 $t$ 的上界。最后寻找使上界最小化的最优参数 $t$。}
+\end{exercise}
+\begin{solution}
+    对任意 $t > 0$，由指数函数的凸性与琴生不等式，有
+    \[
+        e^{t\E{Z}} \le \E{e^{tZ}} = \E{\max_{i\in[n]} e^{t X_i}} \le \sum_{i=1}^n \E{e^{t X_i}} = n e^{\frac{t^2}{2}}.
+    \]
+    从而 $\E{Z} \le \frac{\log n}{t} + \frac{t}{2}$。寻找使上界最小化的 $t$，即 $t = \sqrt{2\log n}$，得到 $\E{Z} \le \sqrt{2\log n}$。
+\end{solution}
+
+\begin{exercise}[\textbf{次高斯分布初探}]
+如果一个均值为 $0$ 的随机变量 $X$，其矩生成函数满足，对于任意 $\lambda \in \bb R$，有 $\E{e^{\lambda X}} \le \exp\tp{\frac{\lambda^2 \sigma^2}{2}}$，我们称 $X$ 是参数为 $\sigma^2$ 的次高斯随机变量。
+\begin{enumerate}
+    \item \textbf{（集中性）}请模仿正文中切尔诺夫界的证明，证明如果 $X$ 是均值为 $0$、参数为 $\sigma^2$ 的次高斯随机变量，则对于任意 $t>0$，有 $\Pr{X \ge t} \le \exp\tp{-\frac{t^2}{2\sigma^2}}$。
+    \item \textbf{（可加性）}证明：若 $X_1$ 和 $X_2$ 是相互独立的次高斯随机变量，均值为 $0$ 且参数分别为 $\sigma_1^2$ 和 $\sigma_2^2$，那么它们的和 $X_1 + X_2$ 也是次高斯随机变量，并且其参数为 $\sigma_1^2 + \sigma_2^2$。
+    \item \textbf{（有界变量即次高斯）}请结合正文中证明过的霍夫丁引理（\zcref{lem:hoeffding-lemma}），说明：如果随机变量 $X$ 满足 $\E{X} = 0$ 且 $X\in[a, b]$，那么 $X$ 是一个参数为 $\sigma^2 = \frac{(b-a)^2}{4}$ 的次高斯随机变量。
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+    \begin{enumerate}
+        \item 对任意 $\lambda > 0$，由马尔可夫不等式和次高斯定义，有
+        \[
+            \Pr{X \ge t} = \Pr{e^{\lambda X} \ge e^{\lambda t}} \le e^{-\lambda t} \E{e^{\lambda X}} \le e^{-\lambda t + \frac{\lambda^2 \sigma^2}{2}}.
+        \]
+        最后寻找使上界最小化的 $\lambda$，即 $\lambda = \frac{t}{\sigma^2}$，得到 $\Pr{X \ge t} \le e^{-\frac{t^2}{2\sigma^2}}$。
+        \item 由于 $X_1$ 和 $X_2$ 独立，我们有
+        \[
+            \E{e^{\lambda(X_1 + X_2)}} = \E{e^{\lambda X_1}} \E{e^{\lambda X_2}} \le e^{\frac{\lambda^2 (\sigma_1^2 + \sigma_2^2)}{2}}.
+        \]
+        从而 $X_1 + X_2$ 是参数为 $\sigma_1^2 + \sigma_2^2$ 的次高斯随机变量。
+        \item 由霍夫丁引理，我们有 $\E{e^{\lambda X}} \le e^{\frac{\lambda^2 (b-a)^2}{8}}$，因此 $X$ 是参数为 $\frac{(b-a)^2}{4}$ 的次高斯随机变量。
+    \end{enumerate}
+\end{solution}
+
+
+\begin{exercise}[\textbf{次指数分布初探}]
+    在前面的练习中我们探讨了次高斯分布。然而，许多常见的随机变量（例如高斯随机变量的平方，即卡方分布）的尾部比高斯分布更厚，它们并不满足次高斯分布的条件。为此，我们引入次指数分布的概念。
+    
+    我们称一个随机变量 $X$ 为参数为 $(\nu, \alpha)$ 的\emph{次指数（sub-exponential）}随机变量（其中 $\nu, \alpha > 0$），如果其中心化后的矩生成函数满足：对于任意 $\abs{\lambda} \le \frac{1}{\alpha}$，有
+    \[
+        \E{e^{\lambda (X - \E{X})}} \le \exp\tp{\frac{\lambda^2 \nu}{2}}.
+    \]
+    \begin{enumerate}
+        \item \textbf{（集中性）}请证明：如果 $X$ 是参数为 $(\nu, \alpha)$ 的次指数随机变量，那么对于任意 $t \ge 0$，有
+        \[
+            \Pr{X - \E{X} \ge t} \le 
+            \begin{cases}
+                \exp\tp{-\frac{t^2}{2\nu}}, & \text{若 } t \in \stp{0, \frac{\nu}{\alpha}}, \\
+                \exp\tp{-\frac{t}{2\alpha}}, & \text{若 } t \in \tp{\frac{\nu}{\alpha}, \infty}.
+            \end{cases}
+        \]
+        \item \textbf{（可加性）}假设 $X_1, \dots, X_N$ 是相互独立的随机变量，且每个 $X_i$ 都是参数为 $(\nu_i, \alpha_i)$ 的次指数随机变量。证明：对于任意常数 $w_1, \dots, w_N \in \bb R$，加权和 $\sum_{i=1}^N w_i X_i$ 也是次指数随机变量，且其参数为 $\tp{\sum_{i=1}^N w_i^2 \nu_i, \max_{i \in [N]} \abs{w_i} \alpha_i}$。
+        \item \textbf{（广义伯恩斯坦不等式）}结合前两问的结论，证明广义伯恩斯坦不等式（generalized Bernstein inequality）：在上一问的条件下，记 $S_N = \sum_{i=1}^N w_i X_i$，对于任意 $t \ge 0$，有
+        \[
+            \Pr{S_N - \E{S_N} \ge t} \le 
+            \begin{cases}
+                \exp\tp{-\frac{t^2}{2\sum_{i=1}^N w_i^2 \nu_i}}, & \text{若 } t \in \stp{0, \frac{\sum_{i=1}^N w_i^2 \nu_i}{\max_{i \in [N]} \abs{w_i} \alpha_i}}, \\
+                \exp\tp{-\frac{t}{2\max_{i \in [N]} \abs{w_i} \alpha_i}}, & \text{其他情况.}
+            \end{cases}
+        \]
+    \end{enumerate}
+\end{exercise}
+\begin{solution}
+    \begin{enumerate}
+        \item 对于任意的参数 $\lambda \in \left(0, 1/\alpha \right]$，由切尔诺夫界，我们有
+        \begin{align*}
+            \Pr{X - \E{X} \ge t} &= \Pr{e^{\lambda(X - \E{X})} \ge e^{\lambda t}} \\
+            &\le e^{-\lambda t} \E{e^{\lambda(X - \E{X})}} \\
+            &\le e^{-\lambda t + \frac{\lambda^2 \nu}{2}}.
+        \end{align*}
+        为了得到最紧的界，我们在区间 $\left(0, 1/\alpha\right]$ 内选取使得上界最小的 $\lambda$：
+        \begin{itemize}
+            \item 当 $t \in \stp{0, \frac{\nu}{\alpha}}$ 时，取得极小值的点为 $\lambda = \frac{t}{\nu}$，代入可得上界为 $\exp\tp{-\frac{t^2}{\nu} + \frac{t^2}{2\nu}} = \exp\tp{-\frac{t^2}{2\nu}}$。
+            \item 当 $t \in \tp{\frac{\nu}{\alpha}, \infty}$ 时，我们取定义域的边界值 $\lambda = \frac{1}{\alpha}$，代入上式得到界为 $\exp\tp{-\frac{t}{\alpha} + \frac{\nu}{2\alpha^2}}$。又由于在此情况下 $t > \frac{\nu}{\alpha}$，即 $\nu < \alpha t$，所以有 $\frac{\nu}{2\alpha^2} < \frac{\alpha t}{2\alpha^2} = \frac{t}{2\alpha}$。因此 $\exp\tp{-\frac{t}{\alpha} + \frac{\nu}{2\alpha^2}} < \exp\tp{-\frac{t}{\alpha} + \frac{t}{2\alpha}} = \exp\tp{-\frac{t}{2\alpha}}$。
+        \end{itemize}
+
+        \item 设 $S_N = \sum_{i=1}^N w_i X_i$，我们需要考察其中心化后的矩生成函数。由于 $X_i$ 是相互独立的，因此：
+        \begin{align*}
+            \E{e^{\lambda (S_N - \E{S_N})}} &= \E{\exp\tp{\sum_{i=1}^N \lambda w_i (X_i - \E{X_i})}} \\
+            &= \prod_{i=1}^N \E{\exp\tp{\lambda w_i (X_i - \E{X_i})}}.
+        \end{align*}
+        要利用每个 $X_i$ 是参数为 $(\nu_i, \alpha_i)$ 的次指数随机变量的性质，我们需要保证对于所有的 $i \in [N]$ 都有 $\abs{\lambda w_i} \le \frac{1}{\alpha_i}$，即 $\abs{\lambda} \le \frac{1}{\abs{w_i}\alpha_i}$。
+        为了使该条件对所有项同时成立，只需 $\abs{\lambda} \le \frac{1}{\max_{i \in [N]} \abs{w_i} \alpha_i}$。在此条件下，有：
+        \begin{align*}
+            \prod_{i=1}^N \E{\exp\tp{\lambda w_i (X_i - \E{X_i})}} &\le \prod_{i=1}^N \exp\tp{\frac{(\lambda w_i)^2 \nu_i}{2}} \\
+            &= \exp\tp{\frac{\lambda^2}{2} \sum_{i=1}^N w_i^2 \nu_i}.
+        \end{align*}
+        根据定义，这意味着加权和 $S_N$ 也是一个次指数随机变量，且对应的参数分别为 $\tp{\sum_{i=1}^N w_i^2 \nu_i, \max_{i \in [N]} \abs{w_i} \alpha_i}$。
+
+        \item 将第2问的结论直接代入第1问即可。令 $X = S_N$，则 $S_N$ 是一个参数 $\nu^* = \sum_{i=1}^N w_i^2 \nu_i$ 与 $\alpha^* = \max_{i \in [N]} \abs{w_i} \alpha_i$ 的次指数随机变量。在第1问的定理中，将 $X$ 替换为 $S_N$、$\nu$ 替换为 $\nu^*$、$\alpha$ 替换为 $\alpha^*$，即可直接得到广义伯恩斯坦不等式。
+    \end{enumerate}
+\end{solution}
+
+\mn{不相关变量的集中性来自MDP Exercise 2.5}
+\begin{exercise}[\textbf{不相关变量集中不等式}]
+在正文中，我们探讨了独立随机变量之和的集中不等式。现在我们放宽条件，看看如果随机变量仅仅是不相关的，能得到怎样的集中性。设 $X_1, X_2, \dots$ 是一系列中心化（即 $\E{X_i} = 0$）且两两不相关的随机变量，即对于任意 $i \neq j$，有 $\E{X_i X_j} = \E{X_i}\E{X_j}$。
+\begin{enumerate}
+    \item 假设存在常数 $C < +\infty$ 使得对所有 $i$ 都有 $\Var{X_i} \le C$。请证明对于任意 $t > 0$，有：
+    \[
+        \Pr{\abs{\frac{1}{n} \sum_{i=1}^n X_i} \ge t} \le \frac{C}{n t^2}.
+    \]
+    \item 利用上述结论，证明 $L^2$ 弱大数定律：若 $X_1, X_2, \dots$ 是期望均为 $\mu$、方差一致有界（$\sup_i \Var{X_i} < +\infty$）且两两不相关的随机变量，则其经验均值依概率收敛到 $\mu$，即 $\frac{1}{n} \sum_{i=1}^n X_i \xrightarrow{p} \mu$。
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+    \begin{enumerate}
+        \item 由于随机变量两两不相关，其和的方差等于所有变量方差的和。令 $S_n = \frac{1}{n}\sum_{i=1}^n X_i$，则 $\E{S_n} = 0$，$\Var{S_n} = \frac{1}{n^2} \sum_{i=1}^n \Var{X_i} \le \frac{nC}{n^2} = \frac{C}{n}$。直接套用切比雪夫不等式即得 $\Pr{\abs{S_n} \ge t} \le \frac{\Var{S_n}}{t^2} \le \frac{C}{nt^2}$。
+        \item 令中心化变量 $Y_i = X_i - \mu$，它们依然满足两两不相关且方差 $\le C$ 的条件。对于任意 $\eps > 0$，应用第一问结论有 $\Pr{\abs{\frac{1}{n}\sum_{i=1}^n X_i - \mu} \ge \eps} = \Pr{\abs{\frac{1}{n}\sum_{i=1}^n Y_i} \ge \eps} \le \frac{C}{n\eps^2}$。当 $n \to \infty$ 时该上界趋于 $0$，满足依概率收敛的定义。
+    \end{enumerate}
+\end{solution}
+
+\mn{两两独立变量的多项式集中性来自MDP Exercise 2.6}
+\begin{exercise}[\textbf{两两独立下的集中性反例}]
+上一题表明，仅仅是不相关的条件，就足以让我们得到多项式级别的集中不等式。那么，两两独立且有界的随机变量能否像完全独立那样，带来指数级的集中性呢？本题将给出一个反例。
+
+设 $U = (U_1, \dots, U_\ell)$ 是均匀分布在 $\set{0, 1}^\ell$ 上的随机向量。令 $n = 2^\ell - 1$。对于任意非零向量 $v \in \set{0, 1}^\ell \setminus \set{\*0}$，定义随机变量 $X_v = \inner{U}{v} \pmod 2$。
+\begin{enumerate}
+    \item 请证明：这 $n$ 个随机变量 $X_v$ 均服从 $\set{0, 1}$ 上的均匀分布，且它们是两两独立的。
+    \item 请证明：对于任何由这 $n$ 个随机变量 $\set{X_v}_{v \neq \*0}$ 生成的事件 $A$（即 $A \in \sigma\tp{\set{X_v}_{v \neq \*0}}$），其发生的概率 $\Pr{A}$ 要么是 $0$，要么至少是 $\frac{1}{n+1}$。
+\end{enumerate}
+\mn{这说明，由两两独立随机变量构成的系统，不能保证指数尾部概率的衰减。}
+\end{exercise}
+\begin{solution}
+    \begin{enumerate}
+        \item 当 $v \neq \*0$ 时，存在分量 $v_k = 1$。固定 $U$ 除了第 $k$ 位的其余分量，因 $U_k$ 在 $\set{0, 1}$ 上均匀分布且通过模 2 加法仅反转奇偶性，因此 $X_v \sim \!{Ber}(1/2)$。对于 $v \neq w$，向量差 $v+w \bmod 2 \neq \*0$，同理可知事件 $\set{X_v \neq X_w}$ 对应的 $X_{v+w}$ 同样服从均匀分布。这说明它们的联合分布也是均匀的，即 $\Pr{X_v=a, X_w=b} = 1/4$，从而 $X_v, X_w$ 两两独立。
+        \item 这 $n$ 个变量完全由基础向量 $U$ 唯一决定。而 $U \in \set{0,1}^\ell$ 总共只有 $2^\ell = n+1$ 种可能的等概率结果。因此整个概率空间在本质上只有 $n+1$ 个基本事件，且分别具有 $\frac{1}{n+1}$ 的发生概率。任何事件 $A$ 只能是这些基本事件构成的某种并集，故其总概率自然就是 $\frac{1}{n+1}$ 的非负整数倍。这引出了非 $0$ 即不小于 $\frac{1}{n+1}$ 的下界。
+    \end{enumerate}
+\end{solution}
+
+\subsection*{问题}
+
+\begin{problem}[\textbf{双选之力}]
+在正文讲的投球入箱模型中，我们将 $n$ 个球独立均匀随机地投入 $n$ 个箱子，最大负载高概率是 $O\tp{\frac{\log n}{\log \log n}}$。这就是大自然的“不公平性”。现在假设我们改变投球规则：每次投球时，我们独立均匀随机地挑选 $2$ 个不同的箱子，然后看一眼，把球放入这两个箱子中当前球更少的那一个（如果一样多就随便挑一个）。
+\begin{enumerate}
+    \item 令 $\nu_k$ 表示在投入全部 $n$ 个球后，负载至少为 $k$ 的箱子数量（$k\le n$）。请证明：在已知 $\nu_k \le \beta_k$ 的条件下（其中 $\beta_k$ 是一个确定的数），以至少 $1 - n^{-2}$ 的概率，有
+    \[
+        \nu_{k+1} \le \frac{2\beta_k^2}{n}.
+    \]
+    \item 定义序列 $\beta_k$ 如下：$\beta_6 = n/4$，且 $\beta_{k+1} = \frac{2\beta_k^2}{n}$。请解出 $\beta_{k+6}$ 的通项公式。并据此证明，只需要 $k^* = O(\log \log n)$ 次迭代，上界 $\beta_{k^*}$ 就会下降到 $O(\log n)$ 的级别。
+\end{enumerate}
+\htodo{第一问证明似乎要用到coupling，并且概率空间也有点绕}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item 记 $h_i(t)$ 为第 $t$ 个球投完后第 $i$ 个箱子的负载，$h_i(0)=0$。则函数 $h_i$ 单调不减且 $\nu_k = \sum_{i=1}^n \1{h_i(n) \ge k}$。
+        考虑第 $t$ 个球 ($t \in [n]$)，设其选择的两个箱子分别为 $A_t, B_t$。该球最终会落入负载至少为 $k$ 的箱子，当且仅当 $h_{A_t}(t-1) \ge k$ 且 $h_{B_t}(t-1) \ge k$。
+        令 $I_t$ 为第 $t$ 个球落入高负载箱（$\ge k$）的指示变量。在给定最终结果满足 $\nu_k \le \beta_k$ 的条件下，在过程中的任意时刻 $t-1$，负载达到 $k$ 的箱子数也必然不超过 $\beta_k$。
+        因此，对于任意 $t$，第 $t$ 个球选中两个负载均 $\ge k$ 的箱子的概率 $p_t$ 满足：
+        \[
+             p_t \le \frac{\beta_k}{n} \times \frac{\beta_k - 1}{n - 1} \le \tp{\frac{\beta_k}{n}}^2.
+        \]
+        显然，最终负载至少为 $k+1$ 的箱子数 $\nu_{k+1}$ 不会超过落入高负载箱的球的总数 $\sum_{t=1}^n I_t$。
+        我们可以构造 $n$ 个独立的伯努利随机变量 $X_1, \dots, X_n \sim \!{Ber}((\beta_k/n)^2)$ 来控制 $I_t$（虽然 $I_t$ 之间并非独立，但可以通过耦合证明其和受控于独立和 $\sum X_t$）。
+        令 $S = \sum_{t=1}^n X_t$，则 $\E{S} = n \cdot (\!/n)^2 = \beta_k^2/n$。
+        利用切尔诺夫界（乘法形式，取 $\delta=1$），由于 $\E{S} = \beta_k^2/n \ge 6\ln n$，我们有：
+        \[
+            \Pr{\nu_{k+1} \ge \frac{2\beta_k^2}{n}} \le \Pr{S \ge 2\E{S}} \le \exp\tp{-\frac{\E{S}}{3}} \le \exp\tp{-2\ln n} = \frac{1}{n^2}.
+        \]
+        因此，以至少 $1 - n^{-2}$ 的概率，$\nu_{k+1} \le \frac{2\beta_k^2}{n}$。
+
+        \item 我们有递推式 $\frac{\beta_{k+1}}{n} = 2 \tp{\frac{\beta_k}{n}}^2$。
+        令 $x_k = \frac{\beta_{k+6}}{n}$，则 $x_{k+1} = 2 x_k^2$，即 $2x_{k+1} = (2x_k)^2$。
+        令 $y_k = 2x_k$，则 $y_{k+1} = y_k^2$，其通解为 $y_k = y_0^{2^k}$。
+        初始条件：$y_0 = 2x_0 = \frac{2\beta_6}{n} = \frac{2(n/4)}{n} = \frac{1}{2}$。
+        因此 $y_k = (1/2)^{2^k} = 2^{-2^k}$。
+        代回 $\beta_{k+6}$：
+        \[
+            \beta_{k+6} = n x_k = \frac{n y_k}{2} = n \cdot 2^{-(2^k + 1)}.
+        \]
+        要使 $\beta_{k+6}$ 降至 $O(\log n)$ 甚至常数级别，我们需要 $2^{2^k} \approx n$，即 $2^k \approx \log_2 n$，解得 $k \approx \log_2 \log_2 n$。
+        因此，只需要 $k^* = \log_2 \log_2 n + O(1)$ 步迭代，$\beta_{k^*}$ 就会收敛到很小的值。用全概率公式递推可以说明最大负载高概率不超过 $O(\log \log n)$。
+    \end{enumerate}
+\end{solution}
+
+\begin{problem}[\textbf{乐观的馈赠}]
+在正文中讨论多臂老虎机时，我们提到，即使不知晓各个臂的期望收益率，通过置信区间构建的 UCB（Upper Confidence Bound）算法能够实现更优的次线性懊悔。假设我们在第 $t$ 次拉动前，第 $i$ 个臂已被拉动了 $T_i(t-1)$ 次，其前几次的经验均值为 $\hat{\mu}_{i, T_i(t-1)}$。UCB 算法在前 $n$ 轮会把每个臂拉一遍，以保证后续 $T_i(t-1)>0$，对于 $t\geq n+1$，算法在第 $t$ 次会选择最大化以下值的臂：
+\[
+    U_{i,t} = \hat{\mu}_{i, T_i(t-1)} + \sqrt{\frac{2\ln t}{T_i(t-1)}}.
+\]
+如果取到最大值的有多个臂，则随机选择其中一个。不妨假设 $1$ 臂是最优臂（玩家并不知道这个信息），并令 $\Delta_i=\mu_1-\mu_i$。
+\begin{enumerate}
+    \item 请证明，如果 UCB 算法在第 $t$ 步（$t\ge n+1$）选择了次优臂 $i$ （意味着 $U_{i,t} \geq U_{1,t}$），那么必然有以下三种情况之一发生了：
+    \begin{itemize}
+        \item 事件 $A$：最优臂 $1$ 的经验均值被严重低估了，即 $\hat{\mu}_{1, T_1(t-1)} \le \mu_1 - \sqrt{\frac{2\ln t}{T_1(t-1)}}$；
+        \item 事件 $B$：次优臂 $i$ 的经验均值被严重高估了，即 $\hat{\mu}_{i, T_i(t-1)} \ge \mu_i + \sqrt{\frac{2\ln t}{T_i(t-1)}}$；
+        \item 事件 $C$：该次优臂 $i$ 被探索的次数还不够多，$T_i(t-1)$ 对于区分均值差 $\Delta_i$ 来说太小了，即 $\Delta_i \leq 2\sqrt{\frac{2\ln t}{T_i(t-1)}}$。
+    \end{itemize}
+    \item 对于确定的 $t$ 和次优臂 $i$（其中 $t\ge n+1$, $i\neq 1$），请证明上一问中事件 $A$ 和事件 $B$ 发生的概率均不超过 $t^{-4}$。
+    \item 证明每个次优臂被拉动的期望次数 $\E{T_i(T)} = O\tp{\frac{\ln T}{\Delta_i^2}}$，并据此进一步证明UCB算法的期望懊悔上界为 $O\tp{\sqrt{nT\ln T}}$。
+    \item 请指出直观上UCB算法为什么比ETC算法的表现更好？
+\end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item 反证法：若 $A, B, C$ 均不发生，则有 $U_{i,t} = \hat{\mu}_{i, T_i(t-1)} + \sqrt{\dots} < \mu_i + 2\sqrt{\dots} < \mu_i + \Delta_i = \mu_1 < \hat{\mu}_{1, T_1(t-1)} + \sqrt{\dots} = U_{1,t}$，这与前提 $U_{i,t} \ge U_{1,t}$ 矛盾，故这三个事件至少发生其一。
+        \item 对于任意给定的拉动次数 $s \in [t]$，直接应用霍夫丁不等式：单边误差超过 $\sqrt{\frac{2\ln t}{s}}$ 的概率上界为 $\exp\tp{-2 s \tp{\sqrt{\frac{2\ln t}{s}}}^2} = \exp(-4\ln t) = t^{-4}$。
+        % 由联合界对随机变量 $T_i$ 放缩即可得证。
+        \item 当 $T_i(t-1) > \frac{8\ln T}{\Delta_i^2}$ 时，由于 $t \le T$，事件 $C$ 绝不发生。因此第 $t$ 步拉动该次优臂的操作只能由极小概率事件 $A$ 或 $B$ 引起。累加此时可能发生的概率求和即可得到期望拉动次数 \[
+        \E{T_i(T)} \le \frac{8\ln T}{\Delta_i^2} + \sum_{t=1}^T \frac{2}{t^4} = O\tp{\frac{\ln T}{\Delta_i^2}}.
+        \]
+        由于总期望懊悔为 $\sum_{i\ne 1}\Delta_i \E{T_i}$，考虑一个待定阈值 $\Delta$, 将次优臂集合划分为 $I_1 = \set{i: \Delta_i > \Delta}$ 和 $I_2 = \set{i: \Delta_i \le \Delta}$，则
+        \begin{align*}
+            R(T) &= \sum_{i \in I_1} \Delta_i \E{T_i(T)} + \sum_{i \in I_2} \Delta_i \E{T_i(T)}\\
+            &\le \sum_{i \in I_1} O\tp{\frac{\ln T}{\Delta_i}} + O(\Delta T)\\
+            &\le O\tp{\frac{n\ln T}{\Delta}} + O(\Delta T).
+        \end{align*}
+        取$\Delta = \sqrt{n\ln T / T}$，可证明 $O\tp{\sqrt{nT\ln T}}$ 的期望懊悔上界。
+        \item 直观上，ETC 算法僵硬地分离了探索与利用，为了照顾最难区分的臂，会在坏臂上被迫执行极多的固定次数探索；而 UCB 算法秉持“面对未知充满乐观”，自适应地放弃劣质臂，把宝贵的探索精力自然转移到更难以分辨的潜力者角逐上。
+    \end{enumerate}
+\end{solution}
+
+\begin{problem}[\textbf{纯粹的探索}]
+考虑多臂老虎机的\emph{纯探索（pure exploration）}变体，我们不在乎累计懊悔，我们唯一的目的是：拉动尽可能少的次数之后结束探索，并且在结束时以至少 $1-\delta$ 的概率输出均值最大的那个臂（$\delta \in (0,1)$）。
+\begin{enumerate}
+    \item 如果我们已知所有次优臂与最优臂的均值差距都至少为 $\Delta > 0$（但不知道哪个是最优臂）。基于霍夫丁不等式，请设计一个简单的算法（例如，对所有臂进行相同次数的均匀探索），说明总共需要拉动多少次才能保证有至少 $1-\delta$ 的概率选出最优臂。
+    \item 均匀探索算法存在的问题是会在明显极差的臂上浪费大量单次测试成本。我们可以考虑一个更聪明的\emph{连续淘汰（successive elimination）}算法：维护一个活跃臂的集合 $S$，初始 $S=[n]$。在第 $r$ 轮对活跃集的每一个臂各拉动一次，获得活跃集中每个臂在前 $r$ 轮的经验均值 $\hat{\mu}_{i,r}$。取 $C_r = \sqrt{\frac{\ln(4n r^2 / \delta)}{2r}}$，若某一活跃臂 $i$ 的经验均值满足 $\max_{j\in S}\hat{\mu}_{j,r} - \hat{\mu}_{i,r}\geq 2C_r$，则将臂 $i$ 从活跃集中淘汰。定义事件
+    \[
+        \+E = \set{ \forall\, i \in [n],\; \forall\, r \ge 1 \colon\quad \abs{\hat{\mu}_{i,r} - \mu_i} < C_r }
+    \]
+    请证明 $\Pr{\+E}\geq 1-\delta$. 并据此说明算法成功概率至少为 $1-\delta$。
+    \item 不妨假设最优臂的标号为 $1$（玩家并不知道这个信息），请证明，以至少 $1-\delta$ 的概率，该算法的拉动次数不超过 $O\tp{\sum_{i\neq 1}\frac{1}{\Delta_i^2}\log\frac{n}{\delta \Delta_i}}$。
+    \item 探讨上述连续淘汰算法与均匀探索算法的优劣。
+\end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item 若对所有 $n$ 个臂各均匀探索 $m$ 次，最终输出经验均值 $\hat \mu_i$ 最大的臂。不妨假设第一个臂是最优臂，假设最终选择出错，意味着存在次优臂 $i$ 反超最优选项：$\hat{\mu}_i \ge \hat{\mu}_1$。利用霍夫丁不等式，有
+        \[
+            \Pr{\hat{\mu}_i - \mu_i\ge \frac{\Delta_i}{2}} \le \exp\tp{-\frac{m\Delta^2}{2}}
+        \]
+        以及
+        \[
+            \Pr{\hat{\mu}_1 - \mu_1\ge \frac{\Delta_i}{2}} \le \exp\tp{-\frac{m\Delta^2}{2}}.
+        \]
+        所以
+        \[
+            \Pr{\hat{\mu}_i - \hat{\mu}_1 \ge 0} \leq \Pr{\hat{\mu}_i - \mu_i\ge \frac{\Delta_i}{2}} +  \Pr{\hat{\mu}_1 - \mu_1\ge \frac{\Delta_i}{2}} \le 2\exp\tp{-\frac{m\Delta^2}{2}}.
+        \]
+        应用联合界，我们需要对于任意次优臂，发生失误的概率控制在 $\frac{\delta}{n}$，由此解得须给各单臂安排探索 $m = O\tp{\frac{1}{\Delta^2}\log\frac{n}{\delta}}$ 次。期望总拉动次数就是 $O\tp{\frac{n}{\Delta^2}\log\frac{n}{\delta}}$。
+        \item 根据霍夫丁不等式，对于任意臂 $i$ 和轮次 $r$，有 $\Pr{\abs{\hat{\mu}_{i,r} - \mu_i} \ge C_r} \le 2\exp(-2r C_r^2) = \frac{\delta}{2n r^2}$。利用联合界，所有发生越界的概率总和不超过 $\sum_{i=1}^n \sum_{r=1}^\infty \frac{\delta}{2n r^2} = n \cdot \frac{\pi^2}{6} \cdot \frac{\delta}{2n} < \delta$，故 $\Pr{\+E} \ge 1-\delta$。
+        在事件 $\+E$ 发生的前提下，对于仍在活跃集中的最优臂 $1$ 和任意臂 $j$，必有 \[
+            \hat{\mu}_{j,r} - \hat{\mu}_{1,r} < (\mu_j + C_r) - (\mu_1 - C_r) = \mu_j - \mu_1 + 2C_r \le 2C_r.
+        \]
+        故最优臂 $1$ 永远不会满足淘汰条件以被剔除，最终必然作为获胜者输出，算法成功率至少为 $1-\delta$。
+        \item 假设事件 $\+E$ 发生，由前问知最优臂 $1$ 一定存活。对于某个次优臂 $i$，如果在第 $r$ 轮它还没被淘汰，表明它满足未被淘汰的性质，即 $\hat{\mu}_{1,r} - \hat{\mu}_{i,r} < 2C_r$。
+        但另一方面由 $\+E$ 事件性质有 $\hat{\mu}_{1,r} - \hat{\mu}_{i,r} > (\mu_1 - C_r) - (\mu_i + C_r) = \Delta_i - 2C_r$。两式联立得到 $\Delta_i < 4C_r$，即 $\Delta_i < 4\sqrt{\frac{\ln(4n r^2 / \delta)}{2r}}$。
+        解算可知臂 $i$ 的最大存活轮次满足 $r_i = O\tp{\frac{1}{\Delta_i^2}\ln\frac{n}{\delta\Delta_i}}$。由于发生前提事件的概率至少为 $1-\delta$，故以该概率为底线保底时，算法总拉动次数不超过 $\sum_{i=1}^n r_i = O\tp{\sum_{i\neq 1}\frac{1}{\Delta_i^2}\log\frac{n}{\delta\Delta_i}}$。
+        \item 略。
+    \end{enumerate}
+\end{solution}
+
+\mn{区分的代价来自2025年春季随机过程第一次作业题}
+\begin{problem}[\textbf{区分的代价}]\label{prob:distinguish-cost}
+在公平硬币检验（\zcref{exm:coin-chernoff}）中，我们讲过如何用 $T = O\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$ 个样本来判断一个硬币是公平的（$\!{Ber}(1/2)$）还是有偏的（$\!{Ber}(1/2+\eps)$），且判断准确的概率至少为 $1-\delta$。在本题中，我们将证明（在忽略常数倍的意义下）这一算法是最优的。换言之，我们将证明任何满足该条件的算法在输入是公平硬币时必有 $\E{T} = \Omega\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$。
+
+设 $L = \frac{1}{100\eps^2}\log\frac{1}{4\delta}$。假设 $\eps \in (0, 1/8), \delta \in (0, e^{-4}/4)$。我们先考虑确定性算法，即随机性的唯一来源是扔硬币的结果。令 $\Pr[i]{\cdot}$ 和 $\E[i]{\cdot}$ 表示输入硬币是情况 $i$ 时的概率和期望，其中 $i=0$ 表示是公平硬币，$i=1$ 表示是有偏硬币。使用反证法，假设存在一个满足要求的确定性算法 $\+A$，满足 $\E[0]{T} \le L$。
+考虑概率空间 $H_0 = (\Omega, \+F, \bb P_0)$ 和 $H_1 = (\Omega, \+F, \bb P_1)$，其中样本空间 $\Omega = \set{0, 1}^{*}$。
+定义如下三个事件：
+\begin{itemize}
+    \item $A$: $T \le 4L$；
+    \item $B$: 对于任意 $1 \le t \le 4L$，$\abs{K_t - \frac{t}{2}} \le \sqrt{L \log \frac{1}{4\delta}}$，其中 $K_t$ 表示前 $t$ 次实验中正面的个数；
+    \item $C$: $\+A$ 输出 $0$，即认为硬币是公平的。
+\end{itemize}
+
+\begin{enumerate}
+    \item 下面这个定理是切比雪夫不等式的推广，请用这个定理证明 $\Pr[0]{A \cap B \cap C} \ge 1/4$（此定理本身无需证明，可以直接使用）。
+    \begin{quote}
+        \textbf{定理：} 假设 $X_1,\dots,X_N$ 是 $N$ 个定义在同一个概率空间上的独立伯努利随机变量，令 $S_k=\sum_{i=1}^k \tp{X_i - \E{X_i}}$，那么对于任意的 $s>0$,
+        \[
+        \Pr{\max_{1\le k\le N}\abs{S_k}\ge s} \le \frac{\Var{S_n}}{s^2}.
+        \]
+    \end{quote}
+    \item 请证明，对于任意的 $\omega \in A \cap B \cap C$，有 $\frac{\Pr[1]{\omega}}{\Pr[0]{\omega}} \ge 4\delta$。
+    \item 请证明 $\Pr[1]{C} > \delta$，并据此证明满足要求且保证 $\E[0]{T} \le L$ 的确定性算法是不存在的。
+    \item 若 $\+A$ 是一个随机算法，即 $\+A$ 可以使用额外的随机数，那么 $\E[0]{T} = \Omega\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$ 的下界是否仍然成立？为什么？
+    \item 如果你了解\emph{相对熵（KL divergence）}，计算硬币每次独立抛掷中这两种伯努利分布的 KL 散度。你能否直观地解释，为了使两个分布产生的可观测序列在统计上变得“足够好区分”，我们需要积累与 $1/\eps^2$ 成正比的信息量？
+\end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item 首先，由马尔可夫不等式，由于 $\E[0]{T} \le L$，
+        \[
+            \Pr[0]{A} \ge 1 - \frac{\E[0]{T}}{4L} \ge \frac{3}{4}.
+        \]
+        其次，根据所给定理，取 $S_t = K_t - t/2$，其方差 $\Var{S_{4L}} = 4L \cdot \frac{1}{4} = L$。于是
+        \[
+            \Pr[0]{B} \ge 1 - \frac{L}{( \sqrt{L \log \frac{1}{4\delta}} )^2} = 1 - \frac{1}{\log \frac{1}{4\delta}}.
+        \]
+        由于 $\delta < e^{-4}/4$，$\log \frac{1}{4\delta} > 4$，故 $\Pr[0]{B} \ge 3/4$。
+        最后，易知 $\Pr[0]{C} \ge 1-\delta \ge 3/4$。
+        由联合界，
+        \[
+            \Pr[0]{A \cap B \cap C} \ge 1 - (\Pr[0]{\bar A} + \Pr[0]{\bar B} + \Pr[0]{\bar C}) \ge 1/4.
+        \]
+        \item 对于 $\omega \in A \cap B \cap C$，我们有 $K_{T} \le T \le 4L$，且 $T - 2K_{T} \le 2\sqrt{L \log \frac{1}{4\delta}}$。似然比为：
+        \begin{align*}
+            \frac{\Pr[1]{\omega}}{\Pr[0]{\omega}} &= \frac{(\frac{1}{2}+\eps)^{K_T} (\frac{1}{2}-\eps)^{T-K_T}}{(1/2)^T} \\
+            &= (1+2\eps)^{K_T} (1-2\eps)^{T-K_T} \\
+             &= (1-4\eps^2)^{K_T} (1-2\eps)^{T-2K_T} \\
+             &\ge (1-4\eps^2)^{4L} (1-2\eps)^{2\sqrt{L \log \frac{1}{4\delta}}} \\
+             &\ge \exp\tp{-1.78 \cdot 4\eps^2 \cdot 4L - 1.78 \cdot 2\eps \cdot 2\sqrt{L \log \frac{1}{4\delta}}} \\
+             &= \exp\tp{- \frac{1.78 \cdot 16}{100} \log \frac{1}{4\delta} - \frac{1.78 \cdot 4}{10} \log \frac{1}{4\delta}} \\
+             &> \exp\tp{-\log \frac{1}{4\delta}} = 4\delta. 
+        \end{align*}
+        
+        \item 
+        \begin{align*}
+            \Pr[1]{C} &\ge \Pr[1]{A \cap B \cap C} = \sum_{\omega \in A \cap B \cap C} \Pr[1]{\omega} \\
+            &= \sum_{\omega \in A \cap B \cap C} \Pr[0]{\omega} \frac{\Pr[1]{\omega}}{\Pr[0]{\omega}} \\
+            &> 4\delta \sum_{\omega \in A \cap B \cap C} \Pr[0]{\omega} \\
+            &= 4\delta \cdot \Pr[0]{A \cap B \cap C} \ge 4\delta \cdot \frac{1}{4} = \delta.
+        \end{align*}
+        这表明算法在 $H_1$ 下输出 $0$的概率超过了 $\delta$，与假设矛盾。因此满足条件的算法不存在。
+        \item 仍然成立。随机算法可以看作是对一组确定性算法的概率分布。或者等价地，通过预先生成随机数序列将其耦合，上述关于概率及其比值的论证过程依然适用（在给定随机数序列的条件下）。
+    \item 单次抛掷下的 KL 散度为 $D_{\text{KL}}(\bb P_1 \parallel \bb P_0) = \tp{\frac{1}{2}+\eps}\ln(1+2\eps) + \tp{\frac{1}{2}-\eps}\ln(1-2\eps)$。利用 $\ln(1+x)\approx x - x^2/2$，当 $\eps$ 很小时泰勒展开可得 $D_{\text{KL}} \approx 2\eps^2$。这意味着单次独立抛掷提供约 $2\eps^2$ 的区分信息度。由于独立序列的 KL 散度具有可加性，要累计足以常数概率区分这两种分布的信息量，直观上要求观察序列的长度满足 $T \approx \frac{1}{2\eps^2}$。
+    \end{enumerate}
+\end{solution}
+
+\mn{必输的赌博来自2025年秋季高级算法第一次作业题}
+\begin{problem}[\textbf{必输的赌博}]
+    在\zcref{prob:distinguish-cost}中，我们证明了要区分公平硬币和偏差 $\eps$ 的硬币，至少需要 $\Omega(\eps^{-2}\log \delta^{-1})$ 的样本。本题我们将这一结论推广，来证明多臂老虎机（MAB）的懊悔下界。
+    
+    考虑 $K = n+1$ 个臂的老虎机，臂的编号为 $0, 1, \dots, n$。我们构造如下 $n+1$ 个实例集合 $\+I = \set{\nu_0, \nu_1, \dots, \nu_n}$：
+    \begin{itemize}
+        \item 实例 $\nu_0$：臂 $0$ 是最优臂，服从 $\!{Ber}\tp{\frac{1}{2} + \frac{\eps}{2}}$；其余臂 $i \in [n]$ 服从 $\!{Ber}\tp{\frac{1}{2}}$。
+        \item 实例 $\nu_j$ ($j \in [n]$)：臂 $0$ 服从 $\!{Ber}\tp{\frac{1}{2} + \frac{\eps}{2}}$；臂 $j$ 是最优臂，服从 $\!{Ber}\tp{\frac{1}{2} + \eps}$；其余臂 $i \notin \set{0, j}$ 服从 $\!{Ber}\tp{\frac{1}{2}}$。
+    \end{itemize}
+    在这个问题上，我们称一个算法是 $(\eps, \delta)$-PAC 的，如果它在停止时能以至少 $1-\delta$ 的概率输出一个 $\eps$-最优臂（即其与最优臂的期望受益之差小于 $\eps$）。令 $T_j$ 表示臂 $j$ 被拉动的总次数，$\E[\nu]{\cdot}$ 表示在实例 $\nu$ 下的期望，注意，此处的随机性来自算法本身的随机性以及臂的收益的随机性。
+    
+    \begin{enumerate}
+        \item 假设 $\+G$ 是一个 $\tp{\frac{\eps}{2}, \delta}$-PAC 算法（其中 $\delta < 1/8$）。请利用上一题的结论论证：存在常数 $c>0$，使得对于任意 $j \in [n]$，在实例 $\nu_0$ 下，算法 $\+G$ 拉动臂 $j$ 的期望次数 $\E[\nu_0]{T_j}$ 满足：
+        \[
+             \E[\nu_0]{T_j} \ge \frac{c}{\eps^2} \log \frac{1}{\delta} .
+        \]
+        \item 考虑一个总轮数为 $T$ 的 MAB 算法 $\+A$，设其在实例 $\nu$ 上的累积期望懊悔为 $R_T(\+A, \nu)$。请证明：对于任意 MAB 算法 $\+A$，总是存在某个实例 $\nu \in \+I$，使得
+        \[
+            R_T(\+A, \nu) = \Omega(\sqrt{nT}).
+        \]
+        \textit{提示：取 $\eps = 2\sqrt{\frac{n}{T}}$。假设 $\+A$ 在所有实例上的懊悔都很小，可以构造一个纯探索算法 $\+G$：运行 $\+A$ 一共 $T$ 轮，然后输出被拉动次数最多的臂。证明 $\+G$ 是一个 $\tp{\frac{\eps}{2}, \delta}$-PAC 算法，并利用第一问的结论导出矛盾。}
+    \end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item 在实例 $\nu_0$ 和 $\nu_j$ 中，除了臂 $j$ 的分布不同（$\nu_0$ 中为 $\!{Ber}(1/2)$，$\nu_j$ 中为 $\!{Ber}(1/2+\eps)$），其余臂的分布及奖励机制完全相同。
+        如果算法 $\+G$ 是 $(\eps/2, \delta)$-PAC 的，那么：
+        \begin{itemize}
+            \item 在实例 $\nu_0$ 下，算法必须以至少 $1-\delta$ 的概率输出臂 $0$。
+            \item 在实例 $\nu_j$ 下，算法必须以至少 $1-\delta$ 的概率输出臂 $j$。
+        \end{itemize}
+        这意味着算法必须能以 $1-\delta$ 的概率正确区分“臂 $j$ 是 $\!{Ber}(1/2)$”还是“臂 $j$ 是 $\!{Ber}(1/2+\eps)$”。根据\zcref{prob:distinguish-cost}的结论，要完成这一区分任务，在这个臂上的观测次数 $T_j$ 的期望必须满足 $\E[\nu_0]{T_j} \ge \Omega\tp{\frac{1}{\eps^2}\log \frac{1}{\delta}}$。
+        
+        \item 假设 $\+A$ 在所有实例上的期望懊悔都满足 $R_T(\+A, \nu) < \frac{\delta}{10}\sqrt{nT}$（其中 $\delta < 1/8$ 为常数）。
+        构造纯探索算法 $\+G$：运行 $\+A$ 共 $T$ 轮，输出在这 $T$ 轮中被拉动次数最多的臂（若有并列则随机选一个）。
+        
+        在任意实例 $\nu \in \+I$ 中，若 $\+G$ 输出错误（即输出了某个次优臂 $i$），通常意味着算法在该次优臂上花费了过多的拉动次数。更严格地，由马尔可夫不等式，$\+G$ 输出错误答案的概率可以被懊悔上界控制：
+        \[
+            \Pr{\texttt{错误答案}} \le \Pr{\sum_{i:\Delta_i>0} T_i \ge T/2} \le \frac{\sum \Delta_i \E{T_i}}{(\min \Delta_i) T/2} \le \frac{R_T}{(\eps/2) T/2} \le \delta.
+        \]
+        因此 $\+G$ 是一个 $(\eps/2, \delta)$-PAC 算法。
+        
+        由第一问结论，在实例 $\nu_0$ 下，对于任意 $j \in [n]$ 都有 $\E[\nu_0]{T_j} = \frac{c}{\eps^2}\log \frac{1}{\delta}$。我们在 $\nu_0$ 上的懊悔至少是
+        \[
+             R_T(\+A, \nu_0) = \sum_{j=1}^n \frac{\eps}{2} \cdot \E[\nu_0]{T_j} = \frac{\eps}{2} \cdot \frac{cn}{\eps^2}\log \frac{1}{\delta} > \frac{\delta}{10}\sqrt{nT}.
+        \]
+        这与我们可以将懊悔控制在 $\frac{\delta}{10}\sqrt{nT}$ 的假设矛盾（取 $\delta$ 足够小即可）。因此，MAB 问题的懊悔下界为 $\Omega(\sqrt{nT})$。
+    \end{enumerate}
+\end{solution}
+
+
+\mn{均匀性测试来自2025年春季随机过程第一次作业题}
+\begin{problem}[\textbf{均匀性测试}] 在公平硬币检验（\zcref{exm:coin-chernoff}）中，我们讲了如何区分公平硬币和有偏硬币。现在我们来推广这个问题。
+
+考虑概率空间 $\Omega = \set{1, 2, \dots, n}$。对于 $\Omega$ 上的任意一个分布 $q$，令 $q_i$ 表示从分布 $q$ 中采样一次得到样本为 $i$ 的概率（$i \in [n]$）。对于 $\Omega$ 上的两个分布 $p$ 和 $q$，定义其\emph{总变分距离（total variation distance）}为 $\dTV(p, q) = \frac{1}{2} \sum_{i=1}^n \abs{p_i - q_i}$。
+
+令 $\mu$ 是 $\Omega$ 上的均匀分布，$\pi$ 是 $\Omega$ 上的一个未知分布。假设我们已经知道 $\pi$ 要么就是均匀分布（即 $\pi = \mu$），要么与均匀分布差别很大，即 $\dTV(\pi, \mu) \ge \eps$（其中 $\eps \in (0, 1/2)$ 是一个已知的常数）。均匀性测试问题指的是，通过从分布中采样，来判断它到底是均匀分布还是距离均匀分布很远。在这个问题里，我们来设计一个高效的均匀性测试算法，即使用尽量少的样本来保证至少 $1 - \delta$ 的判断准确概率。
+
+大家可以首先猜一下我们至少需要多少个样本才能达到这个目标。在正文里，我们讲了奖券收集问题，知道平均需要大约 $n \log n$ 个样本，才能够保证每一个样本都被采集到。这是否说明，判断目标分布是不是均匀分布，至少需要 $\Omega(n \log n)$ 个样本呢？
+
+实际上，我们可以用少得多的样本达到这个目标。我们一起来设计一个算法，只要用 $O(\sqrt{n})$ 的样本就可以了。假设 $n = 10000$，那么我们只要取几百个样本就能判断是不是均匀分布，我们并不需要获得绝大多数样本的信息。我们用到的工具就是正文提到的生日悖论，我们知道如果 $\pi$ 是均匀分布，那么实际上大约 $\Theta(\sqrt{n})$ 个样本就可以保证高概率出现两个同样的样本。我们接下来的讨论将说明，均匀分布是让这件事最难发生的分布，并利用这个事实来判断一个分布是不是均匀分布。
+
+\begin{enumerate}
+    \item 令 $\norm{\pi} = \sqrt{\sum_{i=1}^n \pi_i^2}$。假设 $X$ 和 $Y$ 是独立地从 $\pi$ 中采的两个样本，请证明 $\Pr{X = Y} = \norm{\pi}^2$。这里 $\norm{\pi}^2$ 被称为碰撞概率。
+    \item 请证明：
+    \begin{enumerate}
+        \item $\norm{\mu}^2 = \frac{1}{n}$；
+        \item 若 $\dTV(\pi, \mu) \ge \eps$，则有 $\norm{\pi}^2 - \norm{\mu}^2 \ge \frac{4\eps^2}{n}$。
+    \end{enumerate}
+    \item 假设 $X_1, X_2, \dots, X_m$ 是 $m$ 个从 $\pi$ 中独立采出的样本点（$m \ge 4$），对于 $1 \le i < j \le m$，定义随机变量 $Y_{ij} = \1{X_i = X_j}$。令 $Z = \frac{1}{\binom{m}{2}} \sum_{1 \le i < j \le m} Y_{ij}$ 表示碰撞发生的频率，请证明：
+    \begin{enumerate}
+        \item $\E{Z} = \norm{\pi}^2$；
+        \item $\Var{Z} \le \frac{4\norm{\pi}^3}{m} + \frac{4\norm{\pi}^2}{m^2}$；(\textit{提示：证明时你可能会用到的不等式：$\sum_{i=1}^n \pi_i^3 \leq \tp{\sum_{i=1}^n \pi_i^2}^{\frac{3}{2}}$，这个结论可以直接使用，无需证明。})
+        \item 无论 $\pi = \mu$ 或 $\dTV(\pi, \mu) \ge \eps$，都有
+        \[
+            \Pr{\abs{Z - \E{Z}} \ge \eps^2 \E{Z}} \le \frac{4\sqrt{n}}{\eps^4 m} + \frac{4n}{\eps^4 m^2}.
+        \]
+    \end{enumerate}
+    \item 根据以上结论，我们知道当 $\dTV(\pi, \mu) \ge \eps$ 时碰撞发生概率明显大于均匀分布下碰撞发生概率，于是我们可以考虑根据碰撞发生频率 $Z$ 的大小来判断 $\pi$ 是否为均匀分布。我们考虑如下算法：
+    \begin{itemize}
+        \item 从 $\pi$ 中独立地采 $m = \frac{100\sqrt{n}}{\eps^4}$ 个样本点，并计算 $Z$ 的值；
+        \item 若 $Z \ge \frac{1+2\eps^2}{n}$，则输出 $\dTV(\pi, \mu) \ge \eps$，反之输出 $\pi = \mu$。
+    \end{itemize}
+    请证明该算法出错概率不超过 $0.1$。
+\end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item 由全概率公式，
+        \begin{align*}
+            \Pr{X=Y} &= \sum_{i=1}^n \Pr{Y=X\mid X=i}\cdot \Pr{X=i} = \sum_{i=1}^n \Pr{Y=i\mid X=i}\cdot \Pr{X=i} \\
+            &= \sum_{i=1}^n \pi_i^2 = \norm{\pi}^2.
+        \end{align*}
+        \item \begin{enumerate}
+            \item $\norm{\mu}^2 = \sum_{i=1}^n \mu_i^2 = n\cdot \frac{1}{n^2} = \frac{1}{n}.$
+            \item 
+            \begin{align*}
+            \norm{\pi}^2 - \norm{\mu}^2 &= \sum_{i=1}^n p_i^2 - \frac{1}{n} = \sum_{i=1}^n \tp{p_i^2 + \frac{1}{n^2} - \frac{2p_i}{n}} \\
+            &= \sum_{i=1}^n \tp{p_i-\frac{1}{n}}^2 \geq \tp{\sum_{i=1}^n {\frac{\abs{p_i-\frac{1}{n}}}{\sqrt{n}}}}^2\\
+            &\geq \frac{4\eps^2}{n}.
+            \end{align*}
+            其中倒数第二步推导用到了柯西-施瓦茨不等式，最后一步用到了 $\dTV(\pi,\mu) \geq \eps$ 的条件。
+        \end{enumerate} 
+        \item \begin{enumerate}
+            \item 由期望的线性性，
+            \begin{align*}
+                \E{Z} = \frac{1}{\binom{m}{2}}\sum_{1\leq i<j \leq m} \E{Y_{i,j}} = \frac{1}{\binom{m}{2}}\sum_{1\leq i<j \leq m} \Pr{X_i=X_j} = \norm{\pi}^2.
+            \end{align*}
+            \item \begin{align*}
+                \Var{Z} &= \E{Z^2} - \E{Z}^2\\
+                &= \frac{1}{\binom{m}{2}^2}\cdot \E{\tp{\sum_{1\leq i<j\leq m} Y_{i,j}}^2 }- \norm{\pi}^4\\
+                &= \frac{1}{\binom{m}{2}^2}\cdot \left(\binom{m}{2}\cdot \Pr{X_1=X_2} + 6\binom{m}{3}\cdot \Pr{X_1=X_2=X_3}  \right.\\
+                &\quad +\left.\binom{4}{2}\binom{m}{4} \Pr{X_1=X_2=X_3=X_4}\right) - \norm{\pi}^4 \\
+                &\leq \frac{4}{m^2}\cdot \norm{\pi}^2 + \frac{4}{m}\cdot \sum_{i=1}^n \pi_i^3 + \norm{\pi}^4  - \norm{\pi}^4\\
+                &\leq \frac{4\norm{\pi}^3}{m} + \frac{4\norm{\pi}^2}{m^2}.
+            \end{align*}
+            \item 由切比雪夫不等式以及3(b)中的结论，
+            \begin{align*}
+                \Pr{\abs{Z-\E{Z}} \geq \eps^2 \E{Z}} &\leq \frac{\Var{Z}}{\eps^4\cdot \E{Z}^2} \\
+                &\leq \frac{\frac{4\norm{\pi}^3}{m} + \frac{4\norm{\pi}^2}{m^2}}{\eps^4\cdot \norm{\pi}^4}\\
+                &= \frac{4}{\eps^4 m\norm{\pi}} + \frac{4}{\eps^4 m^2\norm{\pi}^2}\\
+                &\leq \frac{4\sqrt{n}}{\eps^4 m} + \frac{4n}{\eps^4 m^2}.
+            \end{align*}
+        \end{enumerate}
+        \item 当 $\pi=\mu$，
+        \begin{align*}
+            \Pr{\texttt{算法出错}} &= \Pr{Z\geq \frac{1+2\eps^2}{n}} \leq \Pr{\abs{Z-\E{Z}} \geq \eps^2 \E{Z}} < 0.1.
+        \end{align*}
+        同理，当 $\dTV(\pi,\mu)\geq \eps$，由2(b)，此时 $\E{Z}=\norm{\pi}^2 \geq \frac{1+4\eps^2}{n}$，所以
+        \begin{align*}
+            \Pr{\texttt{算法出错}} &= \Pr{Z< \frac{1+2\eps^2}{n}} \\
+            &=\Pr{Z-\E{Z} < \frac{1+2\eps^2}{n} - \E{Z}} \\
+            &\leq \Pr{\abs{Z-\E{Z}} > \eps^2\E{Z}}\\
+            &<0.1.
+        \end{align*}
+        其中倒数第二步是由于，对于 $0<\eps<1/2$， $\frac{1+2\eps^2}{n}\leq (1-\eps^2)\cdot \frac{1+4\eps^2}{n} \leq (1-\eps^2)\E{Z}$。
+    \end{enumerate}
+\end{solution}
+
+\mn{学习离散分布来自2024年春季随机过程第一次作业题}
+\begin{problem}[\textbf{学习离散分布}]
+假设你计划在校园里开一家咖啡店，想了解学生们最喜欢的咖啡口味。菜单上有 $n$ 种选择。你决定进行一次问卷调查，随机询问学生他们最喜欢的咖啡。问题是：如何利用这些数据来推断学生们的口味偏好？你需要询问多少名学生？
+
+我们将这个问题转化为一个数学模型。令 $p$ 为样本空间 $\Omega = \set{1, 2, \dots, n}$ 上的一个未知分布。现在我们有 $T$ 个独立同分布的样本 $X_1, X_2, \dots, X_T \sim p$。我们希望利用这些样本计算出一个经验分布 $\hat{p}$，使得 $\hat{p}$ 尽可能接近 $p$。具体而言，给定两个参数 $\eps, \delta \in (0, 1)$，你的任务是设计算法，使得算法能以至少 $1 - \delta$ 的概率输出一个满足总变分距离 $\dTV(p, \hat{p}) = \frac{1}{2} \sum_{i=1}^n \abs{p_i - \hat{p}_i} \le \eps$ 的分布 $\hat{p}$，并且使用的样本数 $T$ 尽可能少。
+
+在下文中，我们可以将 $p = (p_1, \dots, p_n)$ 和 $\hat{p} = (\hat{p}_1, \dots, \hat{p}_n)$ 视为两个 $n$ 维向量，满足 $\sum_{i=1}^n p_i = \sum_{i=1}^n \hat{p}_i = 1$ 且对于任意 $i \in [n]$ 都有 $p_i, \hat{p}_i \ge 0$。
+
+\begin{enumerate}
+    \item 首先考虑 $n = 2$ 的情况。对于两个分布 $p = (p_1, p_2)$ 和 $\hat{p} = (\hat{p}_1, \hat{p}_2)$，请设计一个算法，使用 $T = O\tp{\frac{1}{\eps^2} \log \frac{1}{\delta}}$ 个样本，以至少 $1 - \delta$ 的概率找到满足 $\dTV(p, \hat{p}) \le \eps$ 的 $\hat{p}$，并给出你的算法分析。
+    \item 对于一般的 $n \ge 2$，请证明：
+    \[
+        \dTV(p, \hat{p}) = \max_{S \subseteq [n]} \sum_{j \in S} (p_j - \hat{p}_j).
+    \]
+    \item 考虑如下算法：对于每个 $i \in [n]$，令 $\hat{p}_i = \frac{1}{T} \sum_{t=1}^T \1{X_t = i}$，即第 $i$ 种选择出现的频率。对于任意子集 $S \subseteq [n]$，我们用 $p(S)$ 和 $\hat{p}(S)$ 分别表示 $\sum_{j \in S} p_j$ 和 $\sum_{j \in S} \hat{p}_j$。请证明，存在一个常数 $c > 0$，使得对于任意的子集 $S$ 和任意 $\eps > 0$，都有
+    \[
+        \Pr{p(S) - \hat{p}(S) \ge \eps} \le \exp(-c \cdot \eps^2 T).
+    \]
+    \item 证明：使用上述算法构造的 $\hat{p}$，只需要 $T = O\tp{\frac{1}{\eps^2}\tp{n + \log \frac{1}{\delta}}}$ 个样本，就能以至少 $1 - \delta$ 的概率满足 $\dTV(p, \hat{p}) \le \eps$。
+\end{enumerate}
+\end{problem}
+\begin{solution}
+    \begin{enumerate}
+        \item 取 $T = \frac{3}{\eps^2} \ln \frac{2}{\delta}$。令 $\hat{p}_1$ 和 $\hat{p}_2$ 分别为这 $T$ 个样本中种类 $1$ 和种类 $2$ 出现的频率，即 $\hat{p}_1 = \frac{1}{T} \sum_{t=1}^T \1{X_t = 1}$，$\hat{p}_2 = \frac{1}{T} \sum_{t=1}^T \1{X_t = 2}$。由切尔诺夫界，有
+        \[
+            \Pr{\abs{p_1 - \hat{p}_1} > \eps} \le 2\exp\tp{-\frac{\eps^2 T}{3p_1}} \le 2\exp\tp{-\frac{\eps^2 T}{3}} = \delta.
+        \]
+        即满足 $\Pr{\dTV(p, \hat{p}) \le \eps} \ge 1 - \delta$。
+        \item 注意到
+        \begin{align*}
+            \dTV(p, \hat{p}) &= \frac{1}{2} \sum_{i=1}^n \abs{p_i - \hat{p}_i} \\
+            &= \frac{1}{2} \sum_{\substack{i \in [n]:\\ p_i \ge \hat{p}_i}} (p_i - \hat{p}_i) + \frac{1}{2} \sum_{\substack{i \in [n]:\\ p_i < \hat{p}_i}} (\hat{p}_i - p_i).
+        \end{align*}
+        令 $S = \set{i \in [n] : p_i \ge \hat{p}_i}$ 且 $\ol{S} = [n] \setminus S$。则
+        \begin{align*}
+            \dTV(p, \hat{p}) &= \frac{1}{2} \tp{p(S) - \hat{p}(S) - p(\ol{S}) + \hat{p}(\ol{S})} \\
+            &= p(S) - \hat{p}(S) \\
+            &= \max_{S \subseteq [n]} \sum_{j \in S} (p_j - \hat{p}_j).
+        \end{align*}
+        \item 根据定义，$\hat{p}(S) = \frac{1}{T} \sum_{t=1}^T \1{X_t \in S}$。由切尔诺夫界，
+        \[
+            \Pr{p(S) - \hat{p}(S) \ge \eps} \le \exp\tp{-\frac{\eps^2 T}{3p(S)}} \le \exp\tp{-\frac{\eps^2 T}{3}}.
+        \]
+        \item 取样本数 $T = \frac{3}{\eps^2}\tp{n + \ln \frac{1}{\delta}}$。在第 2 小问中我们证明了 $\dTV(p, \hat{p}) = \max_{S \subseteq [n]} \sum_{j \in S} (p_j - \hat{p}_j)$。结合第 3 小问的结论与联合界，我们有：
+        \begin{align*}
+            \Pr{\dTV(p, \hat{p}) \ge \eps} &= \Pr{\max_{S \subseteq [n]} \sum_{j \in S} (p_j - \hat{p}_j) \ge \eps} \\
+            &= \Pr{\exists S \subseteq [n] : p(S) - \hat{p}(S) \ge \eps} \\
+            &\le \sum_{S \subseteq [n]} \Pr{p(S) - \hat{p}(S) \ge \eps} \\
+            &\le 2^n \cdot \exp\tp{-\frac{\eps^2 T}{3}} \\
+            &= 2^n \cdot \delta \cdot e^{-n} < \delta.
+        \end{align*}
+    \end{enumerate}
+\end{solution}
+
+\mn{没有免费的午餐定理来自MDP Thm 2.4.42}
+\begin{problem}[\textbf{没有免费的午餐}]
+    在二分类问题中，给定样本集 $S_m = \set{(X_i, C(X_i))}_{i=1}^m$，其中 $X_i \in \bb R^d$ 独立同分布地采样自未知概率测度 $\mu$，标签由布尔函数 $C: \bb R^d \to \set{0, 1}$ 给出。我们的目标是通过学习算法 $\+A$，基于样本 $S_m$ 构造一个函数 $h = \+A(\cdot, S_m): \bb R^d \to \set{0, 1}$，使得其误差 $R(h) = \Pr{h(X) \neq C(X)}$ 尽可能小，其中 $X \sim \mu$。
+
+    本题旨在证明机器学习中的经典结论——\emph{没有免费的午餐定理（no free lunch theorem）}。给定任意学习算法 $\+A$ 和任意大小为偶数的有限特征空间 $\+X \subseteq \bb R^d$，记 $\abs{\+X} = 2m > 4$。我们将证明：存在一个函数 $C: \+X \to \set{0, 1}$ 和 $\+X$ 上的分布 $\mu$，使得
+    \[
+        \Pr{R(\+A(\cdot, S_m)) \ge 1/8} \ge 1/8.
+    \]
+    为了证明这一结论，我们采用概率方法。假设 $\mu$ 是 $\+X$ 上的均匀分布。对于每个 $x \in \+X$，我们独立且均匀地从 $\set{0, 1}$ 中随机选取 $Y_x$，并定义随机函数 $C(x) := Y_x$。
+
+    \begin{enumerate}
+        \item 首先，考虑在随机标签 $\set{Y_x}_{x \in \+X}$ 和随机样本 $S_m$ 上的期望风险 $\E{R(\+A(\cdot, S_m))}$。请证明：
+        \[
+            \E{R(\+A(\cdot, S_m))} \ge \frac{1}{4},
+        \]
+        并由此说明，存在一个确定的函数 $C$，使得在该函数下 $\E{R(\+A( S_m))} \ge 1/4$（此处的期望仅对样本 $S_m$ 取）。
+        \item 基于上一问的结论，证明存在一个确定性的函数 $C$，使得：
+        \[
+            \Pr{R(\+A(\cdot, S_m)) \ge 1/8} \ge 1/8.
+        \]
+    \end{enumerate}
+
+    \textit{注：这一结论直观上说明了，如果目标函数是完全任意的，且我们只观察到了空间中一半的样本，那么对于剩下未见的一半样本，我们实际上没有获得任何信息，因此无法期望得到较低的泛化误差。这并非通常意义上的欠拟合（underfitting），而是强调了\emph{归纳偏置（inductive bias）}的必要性：即没有任何算法能在不依赖先验假设的情况下对所有问题都表现良好。}
+\end{problem}
+\mn{学习的本质是举一反三，是将见过的规律推广到未见过的样本上。 但没有免费的午餐定理告诉我们，如果目标函数毫无规律，那么举一不可能反三。
+
+我们平时之所以能用 SVM、神经网络或者随机局部化方法成功解决实际问题，不是因为这些算法绝对无敌，而是因为我们的实际问题本身就是有偏置的（比如图像是平滑的、文本是有语法的、能量函数是有界的）。
+
+算法的设计，本质上就是把我们对物理世界的先验知识（归纳偏置）写入数学模型中。脱离了特定的问题去谈论哪个算法更好是毫无意义的——这就是没有免费午餐的哲学含义。}
+\begin{solution}
+    \begin{enumerate}
+        \item 首先，我们将期望风险写为概率的形式。由于 $\mu$ 在 $\+X$ 上均匀分布，额外独立采样的测试点 $X \sim \mu$。定义以下两个事件：
+        \begin{itemize}
+            \item 事件 $B = \set{\+A(X, S_m) \neq Y_X}$，即学习器在 $X$ 上预测错误。
+            \item 事件 $O = \set{X \in \set{X_1, \dots, X_m}}$，即测试点 $X$ 在训练样本集 $S_m$ 中出现过。
+        \end{itemize}
+        
+        \noindent 根据全期望公式（Tower property），期望风险可以展开为：
+        \begin{align*}
+            \E{R(\+A(X, S_m))} &= \Pr{B} = \E{\Pr{B \mid S_m}} \\
+            &= \E{\Pr{B \mid O, S_m}\Pr{O \mid S_m} + \Pr{B \mid \ol O, S_m}\Pr{\ol O \mid S_m}} \\
+            &\ge \E{\Pr{B \mid \ol O, S_m}\Pr{\ol O \mid S_m}}.
+        \end{align*}
+        
+        \noindent 我们分别分析上述下界中的两项（给定 $S_m$ 的条件下）：
+        \begin{itemize}
+            \item $\Pr{\ol O \mid S_m} \ge 1/2$：因为样本集 $S_m$ 最多包含 $m$ 个不同的点，而在均匀分布 $\mu$ 下，从大小为 $2m$ 的空间 $\+X$ 中抽取的 $X$ 未出现在 $S_m$ 中的概率至少为 $1 - \frac{m}{2m} = 1/2$。
+            \item $\Pr{B \mid \ol O, S_m} = 1/2$：如果 $X \notin \set{X_1, \dots, X_m}$，由于每个 $x \in \+X$ 的标签 $Y_x$ 都是独立、均匀地在 $\set{0, 1}$ 中选取的，那么算法 $\+A$ 仅基于 $S_m$ 给出的预测 $\+A(X, S_m)$ 完全独立于真实的标签 $Y_X$。预测一个取值均匀的随机变量，其错误率恰好为 $1/2$。
+        \end{itemize}
+        
+        \noindent 综合上述两点，我们得到：
+        \[
+            \E{R(\+A(X, S_m))} \ge \frac{1}{4}.
+        \]
+        
+        \noindent 利用全期望公式对 $\set{Y_x}_{x \in \+X}$ 的生成过程进行拆解（即条件期望定律或“第一矩原理”），有：
+        \[
+            \E{\E{R(\+A(X, S_m)) \mid \set{Y_x}_{x \in \+X}}} \ge \frac{1}{4}.
+        \]
+        既然随机组合 $\set{Y_x}$ 的整体平均风险不小于 $1/4$，那么必然存在至少一个具体的实现，即某个确定性的标签分配 $\set{Y_x = y_x}_{x \in \+X}$（也就是确定的函数 $C$），满足：
+        \[
+            \E{R(\+A(X, S_m)) \mid \set{Y_x = y_x}_{x \in \+X}} \ge \frac{1}{4}.
+        \]
+        （此处的条件期望即仅针对样本 $S_m$ 抽取的期望。）
+
+        \item 为了将期望转换为尾部概率，我们可以借助一个变种的 马尔可夫不等式（因为 $R \in [0, 1]$），对于任何取值在 $[0, 1]$ 内并且期望 $\E{Z} = \mu$ 的随机变量 $Z$，对任意参数 $\alpha \in [0, 1]$，有
+        \[
+            \E{Z} \le \alpha \cdot \Pr{Z < \alpha} + 1 \cdot \Pr{Z \ge \alpha} \le \Pr{Z \ge \alpha} + \alpha.
+        \]
+        即 $\Pr{Z \ge \alpha} \ge \E{Z} - \alpha$。
+
+        \noindent 现在我们将这个不等式应用于随机变量 $Z = R(\+A(X,S_m))$，并代入 $\alpha = \E{Z}/2 \ge 1/8$：
+        \begin{align*}
+            \Pr{R(\+A(X,S_m)) \ge 1/8} &\ge \Pr{R(\+A(X,S_m)) \ge \E{R(\+A(X,S_m))}/2}\\
+            &\ge \frac{\E{R(\+A(X,S_m))}}{2} \ge \frac{1/4}{2} = \frac{1}{8}.
+        \end{align*}
+        这正是我们所需要的结论，证明了存在特定的 $C$ 和分布 $\mu$ 使得 $\Pr{R(\+A(S_m)) \ge 1/8} \ge 1/8$。
+    \end{enumerate}
+\end{solution}
+

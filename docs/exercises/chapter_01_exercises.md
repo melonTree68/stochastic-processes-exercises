@@ -8,7 +8,7 @@
     $$
     \Pr\left(Y \ge nH_n + t\right) \le \frac{2n^2}{t^2},
     $$
-    其中 $n$ 是奖券类型总数，$Y$ 是收集齐全 $n$ 种奖券所需的抽奖次数。现在我们用另一种方法来计算这个问题的集中性。
+    其中 $n$ 是奖券类型总数，$Y$ 是收集齐全 $n$ 种奖券所需的抽奖次数，$H_n$ 是调和级数。现在我们用另一种方法来计算这个问题的集中性。
     
     1. 请用联合界分析“存在一种奖券类型在前 $nH_n+t$ 次抽奖中都没有被抽到”的概率，并据此证明
     	$$
@@ -21,7 +21,7 @@
     $$
     \Pr\left(Y \ge nH_n + t\right) \le \frac{2n^2}{t^2},
     $$
-    where $n$ is the total number of coupon types, and $Y$ is the number of draws needed to collect all $n$ types. Now use a different method to study concentration.
+    where $n$ is the total number of coupon types, $Y$ is the number of draws needed to collect all $n$ types and $H_n$ is the $n$-th harmonic number. Now we use a different method to study concentration.
     
     1. Use the union bound to analyze the probability that at least one coupon type is never drawn in the first $nH_n+t$ draws, and deduce
     	$$
@@ -60,7 +60,7 @@
     $$
 --8<-- "solutions/chapter_01/exercises/exercise_max_load.md"
 
-### 精确的代价 (Cost of Exactness)
+### 精确计数内存下界 (Memory Lower Bound for Exact Counting)
 === "中文"
     在流模型计算流长度的问题中，我们提到：任何试图精确计算数据流长度 $m$ 的确定性算法，如果内存不足，则必然出错。
     
@@ -106,7 +106,7 @@
     	\le \int_x^{+\infty} e^{-y^2/2}\,\mathrm{d}y
     	\le x^{-1}e^{-x^2/2}.
     	$$
-    2. 利用上述结论，证明标准高斯尾部概率 $\Pr(|X|\ge t)$（$t>0$）的上下界，并说明当 $t$ 足够大时，
+    2. 利用上述结论，证明标准高斯尾部概率 $\Pr(|X|\ge t)$ 的上下界（$t>0$），并说明当 $t$ 足够大时，
     	$$
     	\Pr(|X|\ge t)=\Theta\left(t^{-1}e^{-t^2/2}\right).
     	$$
@@ -123,7 +123,7 @@
     	\le \int_x^{+\infty} e^{-y^2/2}\,\mathrm{d}y
     	\le x^{-1}e^{-x^2/2}.
     	$$
-    2. Use the above to derive upper and lower bounds for $\Pr(|X|\ge t)$ ($t>0$), and explain why for large $t$,
+    2. Use the above to derive upper and lower bounds for $\Pr(|X|\ge t)$ with $t>0$, and explain why for large $t$,
     	$$
     	\Pr(|X|\ge t)=\Theta\left(t^{-1}e^{-t^2/2}\right).
     	$$
@@ -180,7 +180,7 @@
     $$
     then $X$ is called sub-Gaussian with parameter $\sigma^2$.
     
-    1. (Concentration) Following the Chernoff-bound proof in the text, prove that for any $t>0$,
+    1. (Concentration) Following the Chernoff-bound proof in the main text, prove that for any $t>0$,
     	$$
     	\Pr(X\ge t)\le \exp\left(-\frac{t^2}{2\sigma^2}\right).
     	$$
@@ -252,7 +252,7 @@
     	$$
 --8<-- "solutions/chapter_01/exercises/exercise_sub_exponential_intro.md"
 
-### 退而求其次 (A Weaker Concentration Alternative)
+### 不相关变量集中不等式 (Concentration Inequality for Uncorrelated Variables)
 === "中文"
     设 $X_1,X_2,\dots$ 是一列中心化（$\mathbb{E}[X_i]=0$）且两两不相关的随机变量，即对任意 $i\ne j$，
     $$
@@ -281,7 +281,7 @@
     	$$
 --8<-- "solutions/chapter_01/exercises/exercise_weaker_concentration.md"
 
-### 咫尺天涯 (So Close, Yet So Far)
+### 两两独立下的集中性反例 (Counterexample to Concentration under Pairwise Independence)
 === "中文"
     上一题表明，仅有“不相关”可得到多项式级别集中不等式。那么“两两独立且有界”是否能像完全独立那样带来指数级集中？本题给出一个反例。
     
