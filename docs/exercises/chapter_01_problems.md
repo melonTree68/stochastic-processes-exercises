@@ -61,16 +61,17 @@
 	- $B$: 对于任意 $1 \le t \le 4L$，$\abs{K_t - \frac{t}{2}} \le \sqrt{L \log \frac{1}{4\delta}}$，其中 $K_t$ 表示前 $t$ 次实验中正面的个数；
 	- $C$: $\mathcal{A}$ 输出 $0$，即认为硬币是公平的。
 
-	1. 下面这个定理是切比雪夫不等式的推广，请用这个定理证明 $\Pr[0]{A \cap B \cap C} \ge 1/4$（此定理本身无需证明，可以直接使用）。
-		!!! theorem "定理（可直接使用）"
-			假设 $X_1,\dots,X_N$ 是 $N$ 个定义在同一个概率空间上的独立伯努利随机变量，令 $S_k=\sum_{i=1}^k \tp{X_i - \E{X_i}}$，那么对于任意的 $s>0$,
-			$$
-			\Pr{\max_{1\le k\le N}\abs{S_k}\ge s} \le \frac{\Var{S_n}}{s^2}.
-			$$
-	2. 请证明，对于任意的 $\omega \in A \cap B \cap C$，有 $\frac{\Pr[1]{\omega}}{\Pr[0]{\omega}} \ge 4\delta$。
-	3. 请证明 $\Pr[1]{C} > \delta$，并据此证明满足要求且保证 $\E[0]{T} \le L$ 的确定性算法是不存在的。
-	4. 若 $\mathcal{A}$ 是一个随机算法，即 $\mathcal{A}$ 可以使用额外的随机数，那么 $\E[0]{T} = \Omega\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$ 的下界是否仍然成立？为什么？
-	5. 如果你了解相对熵（KL divergence），计算硬币每次独立抛掷中这两种伯努利分布的 KL 散度。你能否直观地解释，为了使两个分布产生的可观测序列在统计上变得“足够好区分”，我们需要积累与 $1/\eps^2$ 成正比的信息量？
+    1. 下面这个定理是切比雪夫不等式的推广，请用这个定理证明 $\Pr[0]{A \cap B \cap C} \ge 1/4$（此定理本身无需证明，可以直接使用）。
+
+        !!! theorem "定理（可直接使用）"
+            假设 $X_1,\dots,X_N$ 是 $N$ 个定义在同一个概率空间上的独立伯努利随机变量，令 $S_k=\sum_{i=1}^k \tp{X_i - \E{X_i}}$，那么对于任意的 $s>0$,
+            $$
+            \Pr{\max_{1\le k\le N}\abs{S_k}\ge s} \le \frac{\Var{S_n}}{s^2}.
+            $$
+    2. 请证明，对于任意的 $\omega \in A \cap B \cap C$，有 $\frac{\Pr[1]{\omega}}{\Pr[0]{\omega}} \ge 4\delta$。
+    3. 请证明 $\Pr[1]{C} > \delta$，并据此证明满足要求且保证 $\E[0]{T} \le L$ 的确定性算法是不存在的。
+    4. 若 $\mathcal{A}$ 是一个随机算法，即 $\mathcal{A}$ 可以使用额外的随机数，那么 $\E[0]{T} = \Omega\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$ 的下界是否仍然成立？为什么？
+    5. 如果你了解相对熵（KL divergence），计算硬币每次独立抛掷中这两种伯努利分布的 KL 散度。你能否直观地解释，为了使两个分布产生的可观测序列在统计上变得“足够好区分”，我们需要积累与 $1/\eps^2$ 成正比的信息量？
     
 === "English"
 
@@ -91,11 +92,12 @@
     	\E[\nu_0]{T_j} \ge \frac{c}{\eps^2} \log \frac{1}{\delta} .
     	$$
     2. 考虑一个总轮数为 $T$ 的 MAB 算法 $\mathcal{A}$，设其在实例 $\nu$ 上的累积期望懊悔为 $R_T(\mathcal{A}, \nu)$。请证明：对于任意 MAB 算法 $\mathcal{A}$，总是存在某个实例 $\nu \in \mathcal{I}$，使得
-    	$$
-    	R_T(\mathcal{A}, \nu) = \Omega(\sqrt{nT}).
-    	$$
-		??? hint "提示"
-			取 $\eps = 2\sqrt{\frac{n}{T}}$。假设 $\mathcal{A}$ 在所有实例上的懊悔都很小，可以构造一个纯探索算法 $\mathcal{G}$：运行 $\mathcal{A}$ 一共 $T$ 轮，然后输出被拉动次数最多的臂。证明 $\mathcal{G}$ 是一个 $\tp{\frac{\eps}{2}, \delta}$-PAC 算法，并利用第一问的结论导出矛盾。
+	    $$
+	    R_T(\mathcal{A}, \nu) = \Omega(\sqrt{nT}).
+	    $$
+
+        ??? hint "提示"
+            取 $\eps = 2\sqrt{\frac{n}{T}}$。假设 $\mathcal{A}$ 在所有实例上的懊悔都很小，可以构造一个纯探索算法 $\mathcal{G}$：运行 $\mathcal{A}$ 一共 $T$ 轮，然后输出被拉动次数最多的臂。证明 $\mathcal{G}$ 是一个 $\tp{\frac{\eps}{2}, \delta}$-PAC 算法，并利用第一问的结论导出矛盾。
     
 === "English"
 
@@ -177,6 +179,7 @@
 		$$
 
 	注：这一结论直观上说明了，如果目标函数是完全任意的，且我们只观察到了空间中一半的样本，那么对于剩下未见的一半样本，我们实际上没有获得任何信息，因此无法期望得到较低的泛化误差。这并非通常意义上的欠拟合（underfitting），而是强调了归纳偏置（inductive bias）的必要性：即没有任何算法能在不依赖先验假设的情况下对所有问题都表现良好。
+	{: .note-inline}
 === "English"
 
 --8<-- "solutions/chapter_01/problems/problem_no_free_lunch.md"

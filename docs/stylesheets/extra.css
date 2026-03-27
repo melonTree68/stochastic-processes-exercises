@@ -106,3 +106,16 @@
 .md-typeset .admonition.theorem p {
 	color: var(--md-default-fg-color--light);
 }
+
+.md-typeset .note-inline {
+	margin: 0.65rem 0 0.9rem;
+	padding: 0.5rem 0.7rem;
+	border-left: 2px solid var(--md-default-fg-color--lightest);
+	border-radius: 0.35rem;
+	background-color: color-mix(in srgb, var(--md-default-fg-color) 3%, transparent);
+	color: var(--md-default-fg-color--light);
+	font-size: 0.95em;
+	font-style: italic;
+	font-family: "Kaiti SC", "STKaiti", "KaiTi", "Songti SC", serif;
+	line-height: 1.6;
+}
