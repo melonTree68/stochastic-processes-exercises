@@ -31,6 +31,18 @@
 	4. 请指出直观上 UCB 算法为什么比 ETC 算法的表现更好？
     
 === "English"
+    When discussing multi-armed bandits in the main text, we mentioned that even without knowing the expected rewards of each arm, the UCB (Upper Confidence Bound) algorithm, constructed using confidence intervals, can achieve a better sublinear regret. Suppose that before the $t$-th pull, the $i$-th arm has been pulled $T_i(t-1)$ times, and its empirical mean from these previous pulls is $\hat{\mu}_{i, T_i(t-1)}$. The UCB algorithm pulls each arm once in the first $n$ rounds to ensure $T_i(t-1)>0$ subsequently. For $t\ge n+1$, the algorithm selects the arm at the $t$-th step that maximizes the following value:
+    $$
+    U_{i,t} = \hat{\mu}_{i, T_i(t-1)} + \sqrt{\frac{2\ln t}{T_i(t-1)}}.
+    $$
+    If multiple arms attain the maximum, one is chosen uniformly at random. Let us assume without loss of generality that arm $1$ is the optimal arm (the player does not know this information), and let $\Delta_i=\mu_1-\mu_i$.
+    1. Prove that if the UCB algorithm selects a suboptimal arm $i$ at step $t$ ($t\ge n+1$) (meaning $U_{i,t} \geq U_{1,t}$), then at least one of the following three events must have occurred:
+    - Event $A$: The empirical mean of the optimal arm $1$ is severely underestimated, i.e., $\hat{\mu}_{1, T_1(t-1)} \le \mu_1 - \sqrt{\frac{2\ln t}{T_1(t-1)}}$;
+    - Event $B$: The empirical mean of the suboptimal arm $i$ is severely overestimated, i.e., $\hat{\mu}_{i, T_i(t-1)} \ge \mu_i + \sqrt{\frac{2\ln t}{T_i(t-1)}}$;
+    - Event $C$: The suboptimal arm $i$ has not been explored enough, and $T_i(t-1)$ is too small to distinguish the mean difference $\Delta_i$, i.e., $\Delta_i \leq 2\sqrt{\frac{2\ln t}{T_i(t-1)}}$.
+    2. For a fixed $t$ and suboptimal arm $i$ (where $t\ge n+1$, $i\neq 1$), prove that the probability of occurrence for both Event $A$ and Event $B$ in the previous question is at most $t^{-4}$.
+    3. Prove that the expected number of pulls for each suboptimal arm is $\E{T_i(T)} = O\tp{\frac{\ln T}{\Delta_i^2}}$, and use this to further prove that the expected regret upper bound of the UCB algorithm is $O\tp{\sqrt{nT\ln T}}$.
+    4. Provide an intuitive explanation for why the UCB algorithm performs better than the ETC algorithm.
 
 --8<-- "solutions/chapter_01/problems/problem_optimism.md"
 
@@ -47,6 +59,15 @@
     4. 探讨上述连续淘汰算法与均匀探索算法的优劣。
     
 === "English"
+    Consider the pure exploration variant of the multi-armed bandit problem, where we do not care about the cumulative regret. Our sole objective is to terminate the exploration after as few pulls as possible and output the arm with the maximum mean reward with probability at least $1-\delta$ ($\delta \in (0,1)$).
+    1. Suppose we know that the mean difference between any suboptimal arm and the optimal arm is at least $\Delta > 0$ (but we do not know which arm is optimal). Based on Hoeffding's inequality, design a simple algorithm (e.g., uniform exploration that pulls all arms the same number of times) and determine the total number of pulls required to guarantee that the optimal arm is selected with probability at least $1-\delta$.
+    2. The problem with the uniform exploration algorithm is that it wastes a significant amount of testing cost on obviously inferior arms. We can consider a smarter successive elimination algorithm: maintain a set of active arms $S$, initially $S=[n]$. In round $r$, pull each arm in the active set once, and obtain the empirical mean $\hat{\mu}_{i,r}$ of each active arm over the first $r$ rounds. Let $C_r = \sqrt{\frac{\ln(4n r^2 / \delta)}{2r}}$. If the empirical mean of an active arm $i$ satisfies $\max_{j\in S}\hat{\mu}_{j,r} - \hat{\mu}_{i,r}\geq 2C_r$, then arm $i$ is eliminated from the active set. Define the event
+    	$$
+	    \mathcal{E} = \left\lbrace \forall\, i \in [n],\; \forall\, r \ge 1 :\ \abs{\hat{\mu}_{i,r} - \mu_i} < C_r \right\rbrace
+    	$$
+    	Prove that $\Pr{\mathcal{E}}\geq 1-\delta$, and use this to show that the success probability of the algorithm is at least $1-\delta$.
+    3. Assuming without loss of generality that the optimal arm is labeled $1$ (the player does not know this information), prove that with probability at least $1-\delta$, the number of pulls by this algorithm does not exceed $O\tp{\sum_{i\neq 1}\frac{1}{\Delta_i^2}\log\frac{n}{\delta \Delta_i}}$.
+    4. Discuss the pros and cons of the successive elimination algorithm compared to the uniform exploration algorithm.
 
 --8<-- "solutions/chapter_01/problems/problem_pure_exploration.md"
 
@@ -74,6 +95,26 @@
     5. 如果你了解相对熵（KL divergence），计算硬币每次独立抛掷中这两种伯努利分布的 KL 散度。你能否直观地解释，为了使两个分布产生的可观测序列在统计上变得“足够好区分”，我们需要积累与 $1/\eps^2$ 成正比的信息量？
     
 === "English"
+	In the fair coin testing problem, we discussed how to use $T = O\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$ samples to determine whether a coin is fair ($\!{Ber}(1/2)$) or biased ($\!{Ber}(1/2+\eps)$), with a successful probability of at least $1-\delta$. In this problem, we will prove that (up to a constant factor) this algorithm is optimal. In other words, we will prove that any algorithm satisfying this condition must have $\E{T} = \Omega\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$ when the input is a fair coin.
+
+	Let $L = \frac{1}{100\eps^2}\log\frac{1}{4\delta}$. Suppose $\eps \in (0, 1/8), \delta \in (0, e^{-4}/4)$. We first consider deterministic algorithms, where the only source of randomness is the outcome of the coin flips. Let $\Pr[0]{\cdot}$ and $\E[0]{\cdot}$ denote the probability and expectation when the input coin is case $0$, and let $\Pr[1]{\cdot}$ and $\E[1]{\cdot}$ denote the probability and expectation when the input coin is case $1$, where $0$ represents the fair coin and $1$ represents the biased coin. Using proof by contradiction, assume there exists a deterministic algorithm $\mathcal{A}$ meeting the requirements perfectly and satisfying $\E[0]{T} \le L$. Consider the sample space $\Omega = \left\{0, 1\right\}^{*}$.
+
+	Define the following three events:
+	- $A$: $T \le 4L$;
+	- $B$: For any $1 \le t \le 4L$, $\abs{K_t - \frac{t}{2}} \le \sqrt{L \log \frac{1}{4\delta}}$, where $K_t$ is the number of heads in the first $t$ trials;
+	- $C$: $\mathcal{A}$ outputs $0$, concluding that the coin is fair.
+
+    1. The following theorem is a generalization of Chebyshev's inequality. Use this theorem to prove that $\Pr[0]{A \cap B \cap C} \ge 1/4$ (the theorem itself does not need to be proved and can be used directly).
+
+        !!! theorem "Theorem (Can be used directly)"
+            Suppose $X_1,\dots,X_N$ are $N$ independent Bernoulli random variables defined on the same probability space. Let $S_k=\sum_{i=1}^k \tp{X_i - \E{X_i}}$, then for any $s>0$,
+            $$
+            \Pr{\max_{1\le k\le N}\abs{S_k}\ge s} \le \frac{\Var{S_n}}{s^2}.
+            $$
+    2. Prove that for any $\omega \in A \cap B \cap C$, it holds that $\frac{\Pr[1]{\omega}}{\Pr[0]{\omega}} \ge 4\delta$.
+    3. Prove that $\Pr[1]{C} > \delta$, and use this to prove that a deterministic algorithm satisfying the requirements and guaranteeing $\E[0]{T} \le L$ does not exist.
+    4. If $\mathcal{A}$ is a randomized algorithm (i.e., $\mathcal{A}$ can use additional random numbers), does the lower bound $\E[0]{T} = \Omega\tp{\frac{1}{\eps^2}\log\frac{1}{\delta}}$ still hold? Why?
+    5. If you are familiar with relative entropy (KL divergence), calculate the KL divergence of these two Bernoulli distributions for each independent coin flip. Can you intuitively explain why, in order to make the observable sequences generated by the two distributions statistically "distinguishable enough", we need to accumulate an amount of information proportional to $1/\eps^2$?
 
 --8<-- "solutions/chapter_01/problems/problem_distinguishing_cost.md"
 
@@ -100,6 +141,25 @@
             取 $\eps = 2\sqrt{\frac{n}{T}}$。假设 $\mathcal{A}$ 在所有实例上的懊悔都很小，可以构造一个纯探索算法 $\mathcal{G}$：运行 $\mathcal{A}$ 一共 $T$ 轮，然后输出被拉动次数最多的臂。证明 $\mathcal{G}$ 是一个 $\tp{\frac{\eps}{2}, \delta}$-PAC 算法，并利用第一问的结论导出矛盾。
     
 === "English"
+    In the previous problem, we proved that distinguishing a fair coin from a coin with bias $\eps$ requires at least $\Omega(\eps^{-2}\log \delta^{-1})$ samples. In this problem, we generalize this conclusion to prove the regret lower bound for Multi-Armed Bandits (MAB).
+
+	Consider a bandit with $K = n+1$ arms, indexed as $0, 1, \dots, n$. We construct a set of $n+1$ instances $\mathcal{I} = \left\{\nu_0, \nu_1, \dots, \nu_n\right\}$ as follows:
+    - Instance $\nu_0$: Arm $0$ is the optimal arm, following $\!{Ber}\tp{\frac{1}{2} + \frac{\eps}{2}}$; the remaining arms $i \in [n]$ follow $\!{Ber}\tp{\frac{1}{2}}$.
+	- Instance $\nu_j$ ($j \in [n]$): Arm $0$ follows $\!{Ber}\tp{\frac{1}{2} + \frac{\eps}{2}}$; arm $j$ is the optimal arm, following $\!{Ber}\tp{\frac{1}{2} + \eps}$; the remaining arms $i \notin \left\{0, j\right\}$ follow $\!{Ber}\tp{\frac{1}{2}}$.
+
+    In this problem, we call an algorithm $(\eps, \delta)$-PAC if, upon termination, it outputs an $\eps$-optimal arm (i.e., the difference between its expected reward and that of the optimal arm is strictly less than $\eps$) with probability at least $1-\delta$. Let $T_j$ denote the total number of pulls for arm $j$, and $\E[\nu]{\cdot}$ denote the expectation under instance $\nu$. Note that the randomness here stems from both the algorithm's internal randomization and the stochastic rewards of the arms.
+
+    1. Suppose $\mathcal{G}$ is an $\tp{\frac{\eps}{2}, \delta}$-PAC algorithm (where $\delta < 1/8$). Use the conclusion from the previous problem to argue that there exists a constant $c>0$ such that for any $j \in [n]$, under instance $\nu_0$, the expected number of pulls for arm $j$ by algorithm $\mathcal{G}$, denoted as $\E[\nu_0]{T_j}$, satisfies:
+    	$$
+    	\E[\nu_0]{T_j} \ge \frac{c}{\eps^2} \log \frac{1}{\delta} .
+    	$$
+    2. Consider an MAB algorithm $\mathcal{A}$ running for $T$ rounds, and let its expected cumulative regret on instance $\nu$ be $R_T(\mathcal{A}, \nu)$. Prove that for any MAB algorithm $\mathcal{A}$, there always exists some instance $\nu \in \mathcal{I}$ such that
+	    $$
+	    R_T(\mathcal{A}, \nu) = \Omega(\sqrt{nT}).
+	    $$
+
+        ??? hint "Hint"
+            Let $\eps = 2\sqrt{\frac{n}{T}}$. Assuming $\mathcal{A}$ has small regret on all instances, one can construct a pure exploration algorithm $\mathcal{G}$: run $\mathcal{A}$ for a total of $T$ rounds, and then output the most pulled arm. Prove that $\mathcal{G}$ is an $\tp{\frac{\eps}{2}, \delta}$-PAC algorithm, and use the conclusion from part 1 to derive a contradiction.
 
 --8<-- "solutions/chapter_01/problems/problem_unavoidable_loss.md"
 
@@ -132,6 +192,31 @@
     	请证明该算法出错概率不超过 $0.1$。
     
 === "English"
+    In the fair coin testing problem, we discussed how to distinguish a fair coin from a biased coin. Now we generalize this problem.
+
+    Consider the sample space $\Omega = \left\{1, 2, \dots, n\right\}$. For any distribution $q$ on $\Omega$, let $q_i$ denote the probability of obtaining sample $i$ ($i \in [n]$) in a single draw from $q$. For two distributions $p$ and $q$ on $\Omega$, their total variation distance is defined as $\dTV(p, q) = \frac{1}{2} \sum_{i=1}^n \abs{p_i - q_i}$.
+
+    Let $\mu$ be the uniform distribution on $\Omega$, and $\pi$ be an unknown distribution on $\Omega$. Suppose we already know that $\pi$ is either the uniform distribution (i.e., $\pi = \mu$) or it is far from the uniform distribution, meaning $\dTV(\pi, \mu) \ge \eps$ (where $\eps \in (0, 1/2)$ is a known constant). The uniformity testing problem is to determine whether $\pi$ is the uniform distribution or far from it by sampling from the distribution. In this problem, we design an efficient uniformity testing algorithm, which uses as few samples as possible to guarantee a correct judgment probability of at least $1 - \delta$.
+
+    Before proceeding, one might guess the minimum number of samples required to achieve this goal. In the main text, we discussed the coupon collector's problem and established that on average, about $n \log n$ samples are needed to ensure every sample is collected. Does this imply that at least $\Omega(n \log n)$ samples are required to determine whether the target distribution is uniform?
+
+    In fact, we can achieve this goal with far fewer samples. We will work together to design an algorithm that requires only $O(\sqrt{n})$ samples. For instance, if $n = 10000$, we only need to draw a few hundred samples to make the determination, rather than acquiring information about the vast majority of the sample space. The tool we employ is the birthday paradox mentioned in the main text. We know that if $\pi$ is a uniform distribution, then approximately $\Theta(\sqrt{n})$ samples are sufficient to guarantee a high probability of drawing two identical samples. Our subsequent discussion will demonstrate that the uniform distribution makes this event the hardest to occur, and we will exploit this fact to test uniformity.
+
+    1. Let $\|\pi\| = \sqrt{\sum_{i=1}^n \pi_i^2}$. Suppose $X$ and $Y$ are two independent samples drawn from $\pi$. Prove that $\Pr{X = Y} = \|\pi\|^2$. Here, $\|\pi\|^2$ is referred to as the collision probability.
+    2. Prove that:
+    	1) $\|\mu\|^2 = \frac{1}{n}$;
+    	2) If $\dTV(\pi, \mu) \ge \eps$, then $\|\pi\|^2 - \|\mu\|^2 \ge \frac{4\eps^2}{n}$.
+    3. Suppose $X_1, X_2, \dots, X_m$ are $m$ independent samples drawn from $\pi$ ($m \ge 4$). For $1 \le i < j \le m$, define the random variable $Y_{ij} = \1{X_i = X_j}$. Let $Z = \frac{1}{\binom{m}{2}} \sum_{1 \le i < j \le m} Y_{ij}$ denote the empirical collision frequency. Prove that:
+    	1) $\E{Z} = \|\pi\|^2$;
+    	2) $\Var{Z} \le \frac{4\|\pi\|^3}{m} + \frac{4\|\pi\|^2}{m^2}$;
+    	3) Whether $\pi = \mu$ or $\dTV(\pi, \mu) \ge \eps$, we always have
+    	$$
+    	\Pr{\abs{Z - \E{Z}} \ge \eps^2 \E{Z}} \le \frac{4\sqrt{n}}{\eps^4 m} + \frac{4n}{\eps^4 m^2}.
+    	$$
+    4. According to the above results, when $\dTV(\pi, \mu) \ge \eps$, the collision probability is significantly larger than under the uniform distribution. Therefore, we can base our judgment of whether $\pi$ is uniform on the magnitude of the empirical collision frequency $Z$. We consider the following algorithm:
+    - Draw $m = \frac{100\sqrt{n}}{\eps^4}$ independent samples from $\pi$, and calculate the value of $Z$;
+    - If $Z \ge \frac{1+2\eps^2}{n}$, output $\dTV(\pi, \mu) \ge \eps$; otherwise, output $\pi = \mu$.
+    	Prove that the failure probability of this algorithm is at most $0.1$.
 
 --8<-- "solutions/chapter_01/problems/problem_uniformity_testing.md"
 
@@ -155,6 +240,22 @@
     4. 证明：使用上述算法构造的 $\hat{p}$，只需要 $T = O\tp{\frac{1}{\eps^2}\tp{n + \log \frac{1}{\delta}}}$ 个样本，就能以至少 $1 - \delta$ 的概率满足 $\dTV(p, \hat{p}) \le \eps$。
     
 === "English"
+	Suppose you plan to open a coffee shop on campus and want to know the students' favorite coffee flavors. There are $n$ choices on the menu. You decide to conduct a questionnaire survey by randomly asking students for their favorite coffee. The questions are: how do you use this data to infer the students' flavor preferences, and how many students do you need to ask?
+
+	We translate this problem into a mathematical model. Let $p$ be an unknown distribution over the sample space $\Omega = \left\{1, 2, \dots, n\right\}$. Now we have $T$ independent and identically distributed samples $X_1, X_2, \dots, X_T \sim p$. We hope to use these samples to compute an empirical distribution $\hat{p}$ such that $\hat{p}$ is as close to $p$ as possible. Specifically, given two parameters $\eps, \delta \in (0, 1)$, your task is to design an algorithm such that it can, with probability at least $1 - \delta$, output a distribution $\hat{p}$ satisfying a total variation distance $\dTV(p, \hat{p}) = \frac{1}{2} \sum_{i=1}^n \abs{p_i - \hat{p}_i} \le \eps$, while using as few samples $T$ as possible.
+
+    In the following, we can view $p = (p_1, \dots, p_n)$ and $\hat{p} = (\hat{p}_1, \dots, \hat{p}_n)$ as two $n$-dimensional vectors, satisfying $\sum_{i=1}^n p_i = \sum_{i=1}^n \hat{p}_i = 1$ and $p_i, \hat{p}_i \ge 0$ for all $i \in [n]$.
+
+    1. First, consider the case where $n = 2$. For two distributions $p = (p_1, p_2)$ and $\hat{p} = (\hat{p}_1, \hat{p}_2)$, design an algorithm that uses $T = O\tp{\frac{1}{\eps^2} \log \frac{1}{\delta}}$ samples to find a $\hat{p}$ satisfying $\dTV(p, \hat{p}) \le \eps$ with probability at least $1 - \delta$, and provide the analysis for your algorithm.
+    2. For a general $n \ge 2$, prove that:
+    	$$
+    	\dTV(p, \hat{p}) = \max_{S \subseteq [n]} \sum_{j \in S} (p_j - \hat{p}_j).
+    	$$
+    3. Consider the following algorithm: for each $i \in [n]$, let $\hat{p}_i = \frac{1}{T} \sum_{t=1}^T \1{X_t = i}$, which is the frequency of the $i$-th choice. For any subset $S \subseteq [n]$, we use $p(S)$ and $\hat{p}(S)$ to denote $\sum_{j \in S} p_j$ and $\sum_{j \in S} \hat{p}_j$, respectively. Prove that there exists a constant $c > 0$ such that for any subset $S$ and any $\eps > 0$:
+    	$$
+    	\Pr{p(S) - \hat{p}(S) \ge \eps} \le \exp(-c \cdot \eps^2 T).
+    	$$
+    4. Prove that: the $\hat{p}$ constructed by the above algorithm only requires $T = O\tp{\frac{1}{\eps^2}\tp{n + \log \frac{1}{\delta}}}$ samples to satisfy $\dTV(p, \hat{p}) \le \eps$ with probability at least $1 - \delta$.
 
 --8<-- "solutions/chapter_01/problems/problem_discrete_distribution.md"
 
@@ -180,5 +281,24 @@
 
 	<p class="note-inline">注：这一结论直观上说明了，如果目标函数是完全任意的，且我们只观察到了空间中一半的样本，那么对于剩下未见的一半样本，我们实际上没有获得任何信息，因此无法期望得到较低的泛化误差。这并非通常意义上的欠拟合（underfitting），而是强调了归纳偏置（inductive bias）的必要性：即没有任何算法能在不依赖先验假设的情况下对所有问题都表现良好。</p>
 === "English"
+	In the binary classification problem, we are given a sample set $S_m = \left\{(X_i, C(X_i))\right\}_{i=1}^m$, where $X_i \in \bb R^d$ are drawn independently and identically from an unknown probability measure $\mu$, and labels are given by a Boolean function $C: \bb R^d \to \left\{0, 1\right\}$. Our goal is to use a learning algorithm $\mathcal{A}$ to construct a function $h = \mathcal{A}(\cdot, S_m): \bb R^d \to \left\{0, 1\right\}$ based on the sample $S_m$, such that its risk $R(h) = \Pr{h(X) \neq C(X)}$ is as small as possible, where $X \sim \mu$.
+
+	This problem aims to prove a classical result in machine learning: the no free lunch theorem. Given any learning algorithm $\mathcal{A}$ and any finite feature space $\mathcal{X} \subseteq \bb R^d$ of even size, denote $\abs{\mathcal{X}} = 2m > 4$. We will prove that: there exists a function $C: \mathcal{X} \to \left\{0, 1\right\}$ and a distribution $\mu$ over $\mathcal{X}$ such that
+	$$
+	\Pr{R(\mathcal{A}(\cdot, S_m)) \ge 1/8} \ge 1/8.
+	$$
+	To prove this conclusion, we adopt the probabilistic method. Suppose $\mu$ is the uniform distribution over $\mathcal{X}$. For each $x \in \mathcal{X}$, we sample $Y_x$ independently and uniformly at random from $\left\{0, 1\right\}$, and define a random function $C(x) := Y_x$.
+
+	1. First, consider the expected risk $\E{R(\mathcal{A}(\cdot, S_m))}$ over the random labels $\left\{Y_x\right\}_{x \in \mathcal{X}}$ and random sample $S_m$. Prove that:
+		$$
+		\E{R(\mathcal{A}(\cdot, S_m))} \ge \frac{1}{4},
+		$$
+		and use this to demonstrate that there exists a deterministic function $C$ under which $\E{R(\mathcal{A}(S_m))} \ge 1/4$ (the expectation here is taken only over the sample $S_m$).
+	2. Based on the conclusion of the previous part, prove that there exists a deterministic function $C$ such that:
+		$$
+		\Pr{R(\mathcal{A}(\cdot, S_m)) \ge 1/8} \ge 1/8.
+		$$
+
+	<p class="note-inline">Note: Intuitively, this conclusion implies that if the target function is completely arbitrary and we only observe half of the samples in the space, then we essentially gain no information about the unseen half, and thus we cannot expect a low generalization error. This is not underfitting in the usual sense, but rather emphasizes the necessity of an inductive bias: no algorithm can perform well on all problems without relying on prior assumptions.</p>
 
 --8<-- "solutions/chapter_01/problems/problem_no_free_lunch.md"
