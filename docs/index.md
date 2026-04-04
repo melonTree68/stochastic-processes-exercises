@@ -116,6 +116,7 @@ git push -u origin your-branch-name
     - base repository: `yuchen-he00/stochastic-process-exercises`
     - base branch: `main`
     - compare branch: `your-branch-name`
+  
 2. 在 PR 描述中简要写明做了哪些修改，然后点击 **Create pull request** 按钮完成提交。
 
 作者会在 1～7 天内审核你的 PR，通过后会合并并自动编译。
